@@ -3,13 +3,18 @@ import "../styles/tokens.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import MobileBar from "../components/MobileBar.astro";
+import Seo, { type LocalBusinessPage } from "../components/Seo.astro";
 
 interface Props {
   title: string;
   description: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  noindex?: boolean;
+  localBusiness?: LocalBusinessPage;
 }
 
-const { title, description } = Astro.props;
+const { title, description, image, imageAlt, noindex, localBusiness } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,8 +22,7 @@ const { title, description } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <Seo title={title} description={description} image={image} imageAlt={imageAlt} noindex={noindex} localBusiness={localBusiness} />
     <link rel="preload" href="/fonts/archivo-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/source-sans-3-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
   </head>
