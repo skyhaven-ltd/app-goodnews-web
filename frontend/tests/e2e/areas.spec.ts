@@ -34,6 +34,7 @@ test("each area page has its heading, copy, a quote link and LocalBusiness JSON-
   for (const area of areas) {
     await page.goto(area.path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(area.name);
+    await expect(page.getByRole("heading", { level: 2, name: `Services in ${area.name}` })).toBeVisible();
     const main = page.locator("main");
     await expect(main.locator('a[href="/quote"]').first()).toBeVisible();
     await expect(main.locator('a[href="/areas"]').first()).toBeAttached();
