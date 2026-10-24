@@ -8,6 +8,8 @@ plan.txt
 # Frontend
 frontend/dist/
 frontend/.astro/
+frontend/test-results/
+frontend/playwright-report/
 
 # Terraform
 infra/.terraform/

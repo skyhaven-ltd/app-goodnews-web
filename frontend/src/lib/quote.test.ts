@@ -11,6 +11,7 @@ import {
   isUkPostcode,
   parseQuoteRequest,
   validateQuote,
+  validateQuoteFields,
   type Quote,
 } from "./quote";
 
@@ -153,6 +154,21 @@ describe("validateQuote", () => {
     expect(validateQuote(null, now).ok).toBe(false);
     expect(validateQuote("hello", now).ok).toBe(false);
     expect(validateQuote([valid], now).ok).toBe(false);
+  });
+});
+
+describe("validateQuoteFields", () => {
+  it("checks fields without the honeypot or timing rules", () => {
+    const result = validateQuoteFields({ ...valid, website: "filled", startedAt: now });
+    expect(result).toMatchObject({ ok: true, value: { postcode: "B91 3QJ" } });
+  });
+
+  it("reports field errors", () => {
+    const result = validateQuoteFields({ ...valid, phone: "" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(Object.keys(result.errors)).toEqual(["phone"]);
+    }
   });
 });
 

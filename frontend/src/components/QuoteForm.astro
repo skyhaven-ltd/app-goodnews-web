@@ -1,0 +1,170 @@
+---
+import { business, telHref } from "../data/business";
+import { FIELD_LIMITS, QUOTE_SERVICES } from "../lib/quote";
+
+const inputClass =
+  "mt-2 block min-h-tap w-full rounded-brand border border-line bg-ground px-4 py-2 text-base text-navy aria-invalid:border-error";
+const labelClass = "block font-heading text-sm font-bold uppercase tracking-wide text-navy";
+const errorClass = "mt-2 text-base font-semibold text-error";
+---
+
+<form
+  id="quote-form"
+  class="grid gap-6"
+  novalidate
+  data-whatsapp={business.whatsapp}
+  data-sms={business.phone.tel}
+  data-owner={business.ownerFirstName}
+>
+  <div>
+    <label for="quote-name" class={labelClass}>Your name</label>
+    <input
+      id="quote-name"
+      name="name"
+      type="text"
+      autocomplete="name"
+      autocapitalize="words"
+      enterkeyhint="next"
+      required
+      maxlength={FIELD_LIMITS.name}
+      aria-describedby="quote-name-error"
+      class={inputClass}
+    />
+    <p id="quote-name-error" class={errorClass} data-error="name" hidden></p>
+  </div>
+
+  <div>
+    <label for="quote-phone" class={labelClass}>Phone number</label>
+    <input
+      id="quote-phone"
+      name="phone"
+      type="tel"
+      inputmode="tel"
+      autocomplete="tel"
+      enterkeyhint="next"
+      required
+      maxlength={FIELD_LIMITS.phone}
+      aria-describedby="quote-phone-error"
+      class={inputClass}
+    />
+    <p id="quote-phone-error" class={errorClass} data-error="phone" hidden></p>
+  </div>
+
+  <div>
+    <label for="quote-postcode" class={labelClass}>Postcode</label>
+    <input
+      id="quote-postcode"
+      name="postcode"
+      type="text"
+      autocomplete="postal-code"
+      autocapitalize="characters"
+      spellcheck="false"
+      enterkeyhint="next"
+      required
+      maxlength={FIELD_LIMITS.postcode}
+      aria-describedby="quote-postcode-error"
+      class:list={[inputClass, "uppercase sm:max-w-48"]}
+    />
+    <p id="quote-postcode-error" class={errorClass} data-error="postcode" hidden></p>
+  </div>
+
+  <fieldset aria-describedby="quote-service-error" data-field="service">
+    <legend class={labelClass}>Service</legend>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        QUOTE_SERVICES.map((service) => (
+          <label class="inline-flex min-h-tap min-w-tap cursor-pointer items-center justify-center rounded-full border border-line bg-ground px-4 text-base font-semibold text-navy has-checked:border-navy has-checked:bg-navy has-checked:text-ground has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent">
+            <input type="radio" name="service" value={service} class="sr-only" required />
+            {service}
+          </label>
+        ))
+      }
+    </div>
+    <p id="quote-service-error" class={errorClass} data-error="service" hidden></p>
+  </fieldset>
+
+  <div>
+    <label for="quote-description" class={labelClass}>About the job</label>
+    <textarea
+      id="quote-description"
+      name="description"
+      rows="5"
+      required
+      maxlength={FIELD_LIMITS.description}
+      aria-describedby="quote-description-hint quote-description-error"
+      class:list={[inputClass, "min-h-32"]}></textarea>
+    <p id="quote-description-hint" class="mt-2 text-base">Rooms, sizes and anything Darren should know. You can send photos on WhatsApp.</p>
+    <p id="quote-description-error" class={errorClass} data-error="description" hidden></p>
+  </div>
+
+  <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+    <label for="quote-website">Leave this empty</label>
+    <input id="quote-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="grid gap-3 sm:flex sm:flex-wrap">
+    <button
+      type="submit"
+      class="inline-flex min-h-tap items-center justify-center rounded-brand bg-navy px-6 py-3 font-heading font-bold uppercase text-ground disabled:opacity-70"
+      data-action="send"
+    >
+      <span data-label>Send request</span>
+    </button>
+    <button
+      type="button"
+      class="inline-flex min-h-tap items-center justify-center rounded-brand border-2 border-navy bg-ground px-6 py-3 font-heading font-bold uppercase text-navy"
+      data-action="whatsapp"
+    >
+      Message {business.ownerFirstName} on WhatsApp
+    </button>
+  </div>
+
+  <div aria-live="polite">
+    <div data-testid="quote-success" class="rounded-brand bg-pale p-5" tabindex="-1" hidden>
+      <h2 class="text-xl">Request sent</h2>
+      <p class="mt-2">Thank you. {business.ownerFirstName} will reply by WhatsApp or phone.</p>
+    </div>
+
+    <div data-testid="quote-fallback" class="rounded-brand border border-line bg-pale p-5" tabindex="-1" hidden>
+      <h2 class="text-xl">Sorry, we couldn't send that</h2>
+      <p class="mt-2">Your details are still filled in. Please send them to {business.ownerFirstName} another way:</p>
+      <ul class="mt-4 grid gap-3 sm:flex sm:flex-wrap">
+        <li>
+          <a
+            href={`https://wa.me/${business.whatsapp}`}
+            data-fallback="whatsapp"
+            class="inline-flex min-h-tap w-full items-center justify-center rounded-brand bg-navy px-5 py-3 font-heading font-bold uppercase text-ground no-underline"
+          >
+            Send on WhatsApp
+          </a>
+        </li>
+        <li>
+          <a
+            href={`sms:${business.phone.tel}`}
+            data-fallback="sms"
+            class="inline-flex min-h-tap w-full items-center justify-center rounded-brand border-2 border-navy bg-ground px-5 py-3 font-heading font-bold uppercase text-navy no-underline"
+          >
+            Text the details
+          </a>
+        </li>
+        <li>
+          <a
+            href={telHref}
+            class="inline-flex min-h-tap w-full items-center justify-center rounded-brand border-2 border-navy bg-ground px-5 py-3 font-heading font-bold uppercase text-navy no-underline"
+          >
+            Call {business.phone.display}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</form>
+
+<script>
+  import { initQuoteForm } from "../scripts/quote-form";
+
+  const form = document.querySelector<HTMLFormElement>("#quote-form");
+  if (form) {
+    initQuoteForm(form);
+  }
+</script>

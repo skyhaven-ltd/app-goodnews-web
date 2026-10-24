@@ -77,11 +77,14 @@ function isSpam(input: Record<string, unknown>, now: number): boolean {
   return elapsed < MIN_SUBMIT_MS;
 }
 
-export function validateQuote(input: unknown, now: number): QuoteResult {
-  if (typeof input !== "object" || input === null || Array.isArray(input)) {
-    return { ok: false, errors: {}, spam: false };
-  }
-  const data = input as Record<string, unknown>;
+export type QuoteFieldsResult = { ok: true; value: Quote } | { ok: false; errors: QuoteErrors };
+
+function isRecord(input: unknown): input is Record<string, unknown> {
+  return typeof input === "object" && input !== null && !Array.isArray(input);
+}
+
+export function validateQuoteFields(input: unknown): QuoteFieldsResult {
+  const data = isRecord(input) ? input : {};
   const errors: QuoteErrors = {};
 
   const name = text(data.name);
@@ -117,9 +120,8 @@ export function validateQuote(input: unknown, now: number): QuoteResult {
     errors.description = `Please keep the description under ${FIELD_LIMITS.description} characters.`;
   }
 
-  const spam = isSpam(data, now);
-  if (spam || Object.keys(errors).length > 0) {
-    return { ok: false, errors, spam };
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors };
   }
 
   return {
@@ -132,6 +134,21 @@ export function validateQuote(input: unknown, now: number): QuoteResult {
       description: description as string,
     },
   };
+}
+
+export function validateQuote(input: unknown, now: number): QuoteResult {
+  if (!isRecord(input)) {
+    return { ok: false, errors: {}, spam: false };
+  }
+  const fields = validateQuoteFields(input);
+  const spam = isSpam(input, now);
+  if (!fields.ok) {
+    return { ok: false, errors: fields.errors, spam };
+  }
+  if (spam) {
+    return { ok: false, errors: {}, spam };
+  }
+  return fields;
 }
 
 export function byteLength(value: string): number {
