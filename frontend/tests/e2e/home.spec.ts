@@ -78,6 +78,12 @@ test.describe("home page", () => {
     await expect(page.locator("#get-a-quote").locator('a[href="tel:+447456182265"]')).toHaveCount(1);
   });
 
+  test("shows only stated facts as stats", async ({ page }) => {
+    await page.goto("/");
+    const values = await page.locator("#stats li strong").allInnerTexts();
+    expect(values).toEqual(["25+"]);
+  });
+
   test("the process track scrolls sideways by swipe without the page doing so", async ({ page }) => {
     await page.goto("/");
     const track = page.getByRole("region", { name: /how a job comes together/i });

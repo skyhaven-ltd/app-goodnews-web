@@ -9,7 +9,7 @@ import { business, telHref } from "../data/business";
 import { quoteLink } from "../data/navigation";
 import { beforeAfterPairs, projectByFile } from "../data/projects";
 import { leadServices, secondaryServices, serviceHref } from "../data/services";
-import { QUOTE_SERVICES, buildWhatsAppUrl } from "../lib/quote";
+import { buildWhatsAppUrl } from "../lib/quote";
 
 const hero = projectByFile("plastered-hallway.jpg");
 const whatsappHref = buildWhatsAppUrl(business.whatsapp, `Hi ${business.ownerFirstName}, I'd like a quote.`);
@@ -31,13 +31,7 @@ const steps: ProcessStep[] = [
   return { ...step, image: project.image, alt: project.alt };
 });
 
-const trades = QUOTE_SERVICES.filter((service) => service !== "Other").length;
-const stats = [
-  { value: "25+", label: "years in the trade" },
-  { value: "1", label: "tradesman from quote to finish" },
-  { value: String(trades), label: "trades under one roof" },
-  { value: "£0", label: "for a quote" },
-];
+const stats = [{ value: "25+", label: "years in the trade" }];
 
 const areas = [
   "Solihull",
@@ -165,7 +159,7 @@ const secondaryClass =
   }
 
   <section id="stats" aria-label={`Why choose ${business.ownerFirstName}`} class="bg-baby text-navy">
-    <ul class="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-12 md:grid-cols-4 md:px-8 md:py-16">
+    <ul class="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:px-8 md:py-16">
       {
         stats.map((stat) => (
           <li data-motion="rise">
