@@ -1,0 +1,36 @@
+---
+import { testimonials, testimonialsEnabled, type Testimonial } from "../data/testimonials";
+
+interface Props {
+  enabled?: boolean;
+  items?: Testimonial[];
+}
+
+const { enabled = testimonialsEnabled, items = testimonials } = Astro.props;
+const show = enabled && items.length > 0;
+---
+
+{
+  show && (
+    <section data-testimonials class="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-24" aria-labelledby="testimonials-title">
+      <h2 id="testimonials-title" class="text-3xl tracking-tight md:text-5xl">
+        What customers say
+      </h2>
+      <ul class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => (
+          <li>
+            <figure class="flex h-full flex-col rounded-brand border border-line border-t-6 border-t-baby bg-ground p-5">
+              <blockquote class="text-lg text-navy">
+                <p>{item.quote}</p>
+              </blockquote>
+              <figcaption class="mt-4 font-semibold text-body">
+                {item.name}
+                {item.place && <span>, {item.place}</span>}
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

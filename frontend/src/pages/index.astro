@@ -5,6 +5,7 @@ import Base from "../layouts/Base.astro";
 import ProcessTrack, { type ProcessStep } from "../components/home/ProcessTrack.astro";
 import BeforeAfter from "../components/home/BeforeAfter.astro";
 import ServiceCard from "../components/ServiceCard.astro";
+import Testimonials from "../components/Testimonials.astro";
 import { business, telHref } from "../data/business";
 import { quoteLink } from "../data/navigation";
 import { beforeAfterPairs, projectByFile } from "../data/projects";
@@ -175,6 +176,8 @@ const secondaryClass =
     </ul>
     <a href="/areas" class="mt-6 inline-flex min-h-tap items-center font-bold">More about the areas covered</a>
   </section>
+
+  <Testimonials />
 
   <section id="get-a-quote" class="bg-pale">
     <div class="mx-auto grid max-w-6xl gap-8 px-4 py-14 md:grid-cols-2 md:items-center md:px-8 md:py-24">

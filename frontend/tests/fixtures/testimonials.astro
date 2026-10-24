@@ -1,0 +1,19 @@
+---
+import Base from "../../src/layouts/Base.astro";
+import Testimonials from "../../src/components/Testimonials.astro";
+
+const items = [{ quote: "Fixture testimonial text.", name: "Fixture Name", place: "Fixture Place" }];
+---
+
+<Base title="Testimonials test fixture" description="Test fixture for the testimonials section, built only for end-to-end tests." noindex>
+  <h1 class="px-4 py-10 text-3xl">Testimonials fixture</h1>
+  <div id="on">
+    <Testimonials enabled items={items} />
+  </div>
+  <div id="off">
+    <Testimonials enabled={false} items={items} />
+  </div>
+  <div id="empty">
+    <Testimonials enabled items={[]} />
+  </div>
+</Base>

@@ -10,6 +10,7 @@ function fixtures() {
     hooks: {
       "astro:config:setup": ({ injectRoute }) => {
         injectRoute({ pattern: "/e2e/before-after", entrypoint: "./tests/fixtures/before-after.astro" });
+        injectRoute({ pattern: "/e2e/testimonials", entrypoint: "./tests/fixtures/testimonials.astro" });
       },
     },
   };
