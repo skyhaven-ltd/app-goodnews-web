@@ -1,0 +1,82 @@
+---
+import { business } from "../data/business";
+import { homeLink, isCurrent, mainNav, quoteLink } from "../data/navigation";
+
+const path = Astro.url.pathname;
+const linkClass =
+  "inline-flex min-h-tap items-center rounded-brand px-3 font-heading text-sm font-bold uppercase tracking-wide text-navy no-underline hover:bg-pale aria-[current=page]:text-accent";
+const menuLinkClass =
+  "flex min-h-tap items-center border-b border-line px-4 font-heading text-base font-bold uppercase tracking-wide text-navy no-underline aria-[current=page]:text-accent";
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-ground">
+  <div class="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 md:px-8">
+    <a
+      href={homeLink.href}
+      class="inline-flex min-h-tap items-center font-heading text-base font-extrabold uppercase leading-none tracking-wide text-navy no-underline sm:text-lg"
+      aria-current={isCurrent(homeLink.href, path) ? "page" : undefined}
+    >
+      {business.name}
+    </a>
+    <nav aria-label="Main" class="hidden md:block">
+      <ul class="flex items-center gap-1">
+        {
+          mainNav.map((link) => (
+            <li>
+              <a href={link.href} class={linkClass} aria-current={isCurrent(link.href, path) ? "page" : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="ml-2">
+          <a
+            href={quoteLink.href}
+            class="inline-flex min-h-tap items-center rounded-brand bg-navy px-5 font-heading text-sm font-bold uppercase tracking-wide text-ground no-underline"
+            aria-current={isCurrent(quoteLink.href, path) ? "page" : undefined}
+          >
+            {quoteLink.label}
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <button
+      type="button"
+      class="group inline-flex min-h-tap min-w-tap items-center justify-center gap-2 rounded-brand border border-line px-3 font-heading text-sm font-bold uppercase tracking-wide text-navy md:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      data-menu-button
+    >
+      <svg class="size-5 group-aria-expanded:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+      <svg class="hidden size-5 group-aria-expanded:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+      <span>Menu</span>
+    </button>
+  </div>
+  <nav id="mobile-menu" aria-label="Menu" class="border-t border-line bg-ground md:hidden" hidden data-menu>
+    <ul>
+      {
+        [homeLink, ...mainNav, quoteLink].map((link) => (
+          <li>
+            <a href={link.href} class={menuLinkClass} aria-current={isCurrent(link.href, path) ? "page" : undefined}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  import { initMenu } from "../scripts/menu";
+
+  const button = document.querySelector<HTMLButtonElement>("[data-menu-button]");
+  const panel = document.querySelector<HTMLElement>("[data-menu]");
+  if (button && panel) {
+    initMenu(button, panel);
+  }
+</script>

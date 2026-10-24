@@ -13,7 +13,7 @@ async function fillForm(page: Page) {
   await page.getByLabel("Your name").fill(details.name);
   await page.getByLabel("Phone number").fill(details.phone);
   await page.getByLabel("Postcode").fill(details.postcode);
-  await page.getByText(details.service, { exact: true }).click();
+  await page.locator("#quote-form").getByText(details.service, { exact: true }).click();
   await page.getByLabel("About the job").fill(details.description);
 }
 
