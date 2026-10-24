@@ -172,7 +172,7 @@ test.describe("before and after slider", () => {
   });
 
   test("moves by touch drag", async ({ page, hasTouch }) => {
-    test.skip(!hasTouch, "touch is emulated on the mobile project");
+    test.skip(!hasTouch, "needs touch; runs on the mobile project");
     await page.goto("/e2e/before-after");
     const slider = page.getByRole("slider", { name: /compare/i });
     const root = page.locator("[data-before-after]");
