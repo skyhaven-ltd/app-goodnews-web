@@ -9,6 +9,7 @@ import { business, telHref } from "../data/business";
 import { quoteLink } from "../data/navigation";
 import { beforeAfterPairs, projectByFile } from "../data/projects";
 import { leadServices, secondaryServices, serviceHref } from "../data/services";
+import { areaHref, areas } from "../data/areas";
 import { buildWhatsAppUrl } from "../lib/quote";
 
 const hero = projectByFile("plastered-hallway.jpg");
@@ -32,19 +33,6 @@ const steps: ProcessStep[] = [
 });
 
 const stats = [{ value: "25+", label: "years in the trade" }];
-
-const areas = [
-  "Solihull",
-  "Knowle & Dorridge",
-  "Sutton Coldfield",
-  "Edgbaston & Harborne",
-  "Barnt Green & Bromsgrove",
-  "Malvern",
-  "Broadway",
-  "Pershore",
-  "Evesham",
-  "Stratford-upon-Avon",
-];
 
 const eyebrowClass = "font-heading text-sm font-bold uppercase tracking-[0.2em] text-accent";
 const sectionTitleClass = "text-3xl tracking-tight md:text-5xl";
@@ -175,7 +163,15 @@ const secondaryClass =
     <p class={eyebrowClass}>Areas covered</p>
     <h2 class:list={[sectionTitleClass, "mt-2"]}>Where {business.ownerFirstName} works</h2>
     <ul class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-      {areas.map((area) => <li class="rounded-brand bg-pale px-4 py-3 font-bold text-navy">{area}</li>)}
+      {
+        areas.map((area) => (
+          <li>
+            <a href={areaHref(area)} class="flex min-h-tap items-center rounded-brand bg-pale px-4 py-3 font-bold text-navy no-underline">
+              {area.name}
+            </a>
+          </li>
+        ))
+      }
     </ul>
     <a href="/areas" class="mt-6 inline-flex min-h-tap items-center font-bold">More about the areas covered</a>
   </section>

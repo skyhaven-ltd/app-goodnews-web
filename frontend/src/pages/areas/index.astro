@@ -1,0 +1,61 @@
+---
+import Base from "../../layouts/Base.astro";
+import { business, telHref } from "../../data/business";
+import { quoteLink } from "../../data/navigation";
+import { areaHref, areas } from "../../data/areas";
+
+const eyebrowClass = "font-heading text-sm font-bold uppercase tracking-[0.2em] text-accent";
+const primaryClass =
+  "inline-flex min-h-tap items-center justify-center rounded-brand bg-navy px-6 py-3 font-heading font-bold uppercase text-ground no-underline";
+const secondaryClass =
+  "inline-flex min-h-tap items-center justify-center rounded-brand border-2 border-navy px-6 py-3 font-heading font-bold uppercase text-navy no-underline";
+---
+
+<Base
+  title={`Areas Covered | ${business.name}`}
+  description={`The areas ${business.owner} covers for plastering, decorating and gardening across Birmingham, Solihull, Worcestershire and Warwickshire.`}
+  localBusiness={{ areas: areas.map((area) => area.name) }}
+>
+  <section class="bg-pale">
+    <div class="mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-16">
+      <p class={eyebrowClass}>Where {business.ownerFirstName} works</p>
+      <h1 class="mt-2 text-4xl tracking-tight md:text-6xl">Areas covered</h1>
+      <p class="mt-4 max-w-prose text-lg">
+        {business.owner} covers Birmingham, Worcestershire and Evesham for plastering, painting and decorating, and
+        gardening. Pick your area to see what he can do there.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 md:px-8 md:py-16" aria-labelledby="area-list">
+    <h2 id="area-list" class="text-3xl tracking-tight md:text-4xl">Towns and villages</h2>
+    <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        areas.map((area) => (
+          <li>
+            <a
+              href={areaHref(area)}
+              class="flex min-h-tap flex-col justify-center rounded-brand border border-line border-l-6 border-l-baby bg-ground px-4 py-3 text-navy no-underline hover:bg-pale"
+            >
+              <span class="font-heading text-lg font-bold uppercase">{area.name}</span>
+              <span class="text-body">{area.region}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6 max-w-prose">
+      Not listed? Ask anyway through the quote form and {business.ownerFirstName} will tell you if he can help.
+    </p>
+  </section>
+
+  <section class="bg-pale">
+    <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-12 sm:flex-row sm:items-center sm:justify-between md:px-8">
+      <h2 class="text-2xl tracking-tight md:text-3xl">Talk to {business.ownerFirstName} about your job</h2>
+      <div class="grid gap-3 sm:flex">
+        <a href={quoteLink.href} class={primaryClass}>Get a quote</a>
+        <a href={telHref} class={secondaryClass}>Call {business.phone.display}</a>
+      </div>
+    </div>
+  </section>
+</Base>
