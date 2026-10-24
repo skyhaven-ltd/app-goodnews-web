@@ -57,7 +57,9 @@ test("shows a confirmation when the request is sent", async ({ page }) => {
   await expect(success).toContainText("Darren will reply by WhatsApp or phone");
   await expect(page.getByTestId("quote-fallback")).toBeHidden();
   expect(body).toMatchObject({ ...details, postcode: "B91 3QJ", website: "" });
-  expect(typeof body?.startedAt).toBe("number");
+  expect(body).not.toHaveProperty("startedAt");
+  expect(typeof body?.elapsedMs).toBe("number");
+  expect(body?.elapsedMs as number).toBeGreaterThanOrEqual(0);
 });
 
 for (const status of [500, 503, 400]) {

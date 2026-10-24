@@ -7,7 +7,6 @@ export const NOTIFY_TIMEOUT_MS = 8000;
 export interface QuoteHandlerOptions {
   env?: () => Env;
   providers?: NotifierRegistry;
-  now?: () => number;
   timeoutMs?: number;
 }
 
@@ -18,7 +17,6 @@ function processEnv(): Env {
 export function createQuoteHandler(options: QuoteHandlerOptions = {}) {
   const env = options.env ?? processEnv;
   const registry = options.providers ?? defaultProviders;
-  const now = options.now ?? Date.now;
   const timeoutMs = options.timeoutMs ?? NOTIFY_TIMEOUT_MS;
 
   return async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
@@ -27,7 +25,7 @@ export function createQuoteHandler(options: QuoteHandlerOptions = {}) {
       return { status: 400, jsonBody: { ok: false, errors: {} } };
     }
 
-    const result = parseQuoteRequest(await request.text(), now());
+    const result = parseQuoteRequest(await request.text());
     if (!result.ok) {
       return { status: 400, jsonBody: { ok: false, errors: result.errors } };
     }

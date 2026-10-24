@@ -5,8 +5,6 @@ import { MAX_BODY_BYTES, MIN_SUBMIT_MS, formatQuoteMessage, normalisePostcode } 
 import { selectNotifier, type Notifier, type NotifierRegistry } from "../lib/notifier.js";
 import { createQuoteHandler } from "./quote.js";
 
-const now = 1_800_000_000_000;
-
 const valid = {
   name: "Jane Smith",
   phone: "07700 900123",
@@ -14,7 +12,7 @@ const valid = {
   service: "Plastering",
   description: "Skim two bedroom ceilings & hallway, 50% done?",
   website: "",
-  startedAt: now - 60_000,
+  elapsedMs: 60_000,
 };
 
 class FakeNotifier implements Notifier {
@@ -50,7 +48,7 @@ function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang";
   const context = new InvocationContext({
     logHandler: (_level, ...args) => logs.push(args.map(String).join(" ")),
   });
-  const handler = createQuoteHandler({ env: () => env, providers, now: () => now, timeoutMs: 20 });
+  const handler = createQuoteHandler({ env: () => env, providers, timeoutMs: 20 });
   return { notifier, handler, context, logs };
 }
 
@@ -124,9 +122,16 @@ describe("POST /api/quote", () => {
 
   it("returns 400 for a too-fast submit without sending", async () => {
     const { notifier, handler, context } = setup({ provider: "fake" });
-    const response = await handler(post({ ...valid, startedAt: now - MIN_SUBMIT_MS + 1 }), context);
+    const response = await handler(post({ ...valid, elapsedMs: MIN_SUBMIT_MS - 1 }), context);
     expect(response.status).toBe(400);
     expect(notifier.sent).toHaveLength(0);
+  });
+
+  it("accepts a request whose client clock is far ahead of the server", async () => {
+    const { notifier, handler, context } = setup({ provider: "fake" });
+    const response = await handler(post({ ...valid, startedAt: 9_999_999_999_999 }), context);
+    expect(response.status).toBe(200);
+    expect(notifier.sent).toHaveLength(1);
   });
 
   it("returns 400 for an oversized body without sending", async () => {

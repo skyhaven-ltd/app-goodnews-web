@@ -23,7 +23,7 @@ export function initQuoteForm(form: HTMLFormElement) {
   const fallbackWhatsApp = fallback.querySelector<HTMLAnchorElement>("[data-fallback=whatsapp]")!;
   const fallbackSms = fallback.querySelector<HTMLAnchorElement>("[data-fallback=sms]")!;
   const idleLabel = sendLabel.textContent ?? "";
-  let startedAt = Date.now();
+  let startedAt = performance.now();
   let sending = false;
 
   function readFields() {
@@ -108,10 +108,11 @@ export function initQuoteForm(form: HTMLFormElement) {
     const timer = setTimeout(() => controller.abort(), timeout);
     try {
       const website = String(new FormData(form).get("website") ?? "");
+      const elapsedMs = Math.round(performance.now() - startedAt);
       const response = await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...quote, website, startedAt }),
+        body: JSON.stringify({ ...quote, website, elapsedMs }),
         signal: controller.signal,
       });
       return response.ok;
@@ -137,7 +138,7 @@ export function initQuoteForm(form: HTMLFormElement) {
     setSending(false);
     if (sent) {
       form.reset();
-      startedAt = Date.now();
+      startedAt = performance.now();
       showPanel(success);
     } else {
       updateFallbackLinks(quote);

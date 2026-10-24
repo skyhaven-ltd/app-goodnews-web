@@ -15,8 +15,6 @@ import {
   type Quote,
 } from "./quote";
 
-const now = 1_800_000_000_000;
-
 const valid = {
   name: "Jane Smith",
   phone: "07700 900123",
@@ -24,7 +22,7 @@ const valid = {
   service: "Plastering",
   description: "Skim two bedroom ceilings after Artex removal.",
   website: "",
-  startedAt: now - 60_000,
+  elapsedMs: 60_000,
 };
 
 describe("business config", () => {
@@ -65,7 +63,7 @@ describe("isUkPostcode", () => {
 
 describe("validateQuote", () => {
   it("accepts a complete request and normalises it", () => {
-    const result = validateQuote({ ...valid, name: "  Jane Smith " }, now);
+    const result = validateQuote({ ...valid, name: "  Jane Smith " });
     expect(result).toEqual({
       ok: true,
       value: {
@@ -79,7 +77,7 @@ describe("validateQuote", () => {
   });
 
   it("reports every missing field", () => {
-    const result = validateQuote({ website: "", startedAt: valid.startedAt }, now);
+    const result = validateQuote({ website: "", elapsedMs: valid.elapsedMs });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(Object.keys(result.errors).sort()).toEqual(["description", "name", "phone", "postcode", "service"]);
@@ -88,7 +86,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects fields that are only whitespace", () => {
-    const result = validateQuote({ ...valid, name: "   ", description: "\n\t" }, now);
+    const result = validateQuote({ ...valid, name: "   ", description: "\n\t" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(Object.keys(result.errors).sort()).toEqual(["description", "name"]);
@@ -96,7 +94,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects an invalid phone and postcode", () => {
-    const result = validateQuote({ ...valid, phone: "12345", postcode: "nowhere" }, now);
+    const result = validateQuote({ ...valid, phone: "12345", postcode: "nowhere" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.phone).toBeDefined();
@@ -105,7 +103,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects a service that is not offered", () => {
-    const result = validateQuote({ ...valid, service: "Plumbing" }, now);
+    const result = validateQuote({ ...valid, service: "Plumbing" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.service).toBeDefined();
@@ -113,7 +111,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects fields that are too long", () => {
-    const result = validateQuote({ ...valid, name: "a".repeat(101), description: "b".repeat(2001) }, now);
+    const result = validateQuote({ ...valid, name: "a".repeat(101), description: "b".repeat(2001) });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.name).toBeDefined();
@@ -122,7 +120,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects non-string field values", () => {
-    const result = validateQuote({ ...valid, name: 42, phone: ["07700900123"] }, now);
+    const result = validateQuote({ ...valid, name: 42, phone: ["07700900123"] });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.name).toBeDefined();
@@ -131,35 +129,39 @@ describe("validateQuote", () => {
   });
 
   it("rejects a filled honeypot as spam", () => {
-    const result = validateQuote({ ...valid, website: "http://spam.example" }, now);
+    const result = validateQuote({ ...valid, website: "http://spam.example" });
     expect(result).toMatchObject({ ok: false, spam: true });
   });
 
   it("rejects a submit faster than the minimum time as spam", () => {
-    const result = validateQuote({ ...valid, startedAt: now - (MIN_SUBMIT_MS - 1) }, now);
+    const result = validateQuote({ ...valid, elapsedMs: MIN_SUBMIT_MS - 1 });
     expect(result).toMatchObject({ ok: false, spam: true });
   });
 
   it("accepts a submit at exactly the minimum time", () => {
-    expect(validateQuote({ ...valid, startedAt: now - MIN_SUBMIT_MS }, now).ok).toBe(true);
+    expect(validateQuote({ ...valid, elapsedMs: MIN_SUBMIT_MS }).ok).toBe(true);
   });
 
-  it("rejects a missing or future start time as spam", () => {
-    expect(validateQuote({ ...valid, startedAt: undefined }, now)).toMatchObject({ ok: false, spam: true });
-    expect(validateQuote({ ...valid, startedAt: now + 10_000 }, now)).toMatchObject({ ok: false, spam: true });
-    expect(validateQuote({ ...valid, startedAt: "soon" }, now)).toMatchObject({ ok: false, spam: true });
+  it("rejects a missing, negative or non-numeric elapsed time as spam", () => {
+    expect(validateQuote({ ...valid, elapsedMs: undefined })).toMatchObject({ ok: false, spam: true });
+    expect(validateQuote({ ...valid, elapsedMs: -10_000 })).toMatchObject({ ok: false, spam: true });
+    expect(validateQuote({ ...valid, elapsedMs: "60000" })).toMatchObject({ ok: false, spam: true });
+  });
+
+  it("ignores a client start time, so a client clock ahead of the server is not spam", () => {
+    expect(validateQuote({ ...valid, startedAt: 9_999_999_999_999 }).ok).toBe(true);
   });
 
   it("rejects input that is not an object", () => {
-    expect(validateQuote(null, now).ok).toBe(false);
-    expect(validateQuote("hello", now).ok).toBe(false);
-    expect(validateQuote([valid], now).ok).toBe(false);
+    expect(validateQuote(null).ok).toBe(false);
+    expect(validateQuote("hello").ok).toBe(false);
+    expect(validateQuote([valid]).ok).toBe(false);
   });
 });
 
 describe("validateQuoteFields", () => {
   it("checks fields without the honeypot or timing rules", () => {
-    const result = validateQuoteFields({ ...valid, website: "filled", startedAt: now });
+    const result = validateQuoteFields({ ...valid, website: "filled", elapsedMs: 0 });
     expect(result).toMatchObject({ ok: true, value: { postcode: "B91 3QJ" } });
   });
 
@@ -174,23 +176,23 @@ describe("validateQuoteFields", () => {
 
 describe("parseQuoteRequest", () => {
   it("parses and validates a JSON body", () => {
-    const result = parseQuoteRequest(JSON.stringify(valid), now);
+    const result = parseQuoteRequest(JSON.stringify(valid));
     expect(result.ok).toBe(true);
   });
 
   it("rejects a body over the size limit", () => {
     const body = JSON.stringify({ ...valid, description: "x".repeat(MAX_BODY_BYTES) });
-    expect(parseQuoteRequest(body, now)).toMatchObject({ ok: false, tooLarge: true });
+    expect(parseQuoteRequest(body)).toMatchObject({ ok: false, tooLarge: true });
   });
 
   it("measures the size limit in bytes, not characters", () => {
     const body = JSON.stringify({ ...valid, description: "£".repeat(2500) });
     expect(body.length).toBeLessThan(MAX_BODY_BYTES);
-    expect(parseQuoteRequest(body, now)).toMatchObject({ ok: false, tooLarge: true });
+    expect(parseQuoteRequest(body)).toMatchObject({ ok: false, tooLarge: true });
   });
 
   it("rejects malformed JSON", () => {
-    expect(parseQuoteRequest("{not json", now).ok).toBe(false);
+    expect(parseQuoteRequest("{not json").ok).toBe(false);
   });
 });
 

@@ -64,17 +64,13 @@ function isService(value: string): value is QuoteService {
   return (QUOTE_SERVICES as readonly string[]).includes(value);
 }
 
-function isSpam(input: Record<string, unknown>, now: number): boolean {
+function isSpam(input: Record<string, unknown>): boolean {
   const honeypot = input.website;
   if (honeypot !== undefined && honeypot !== "") {
     return true;
   }
-  const startedAt = input.startedAt;
-  if (typeof startedAt !== "number" || !Number.isFinite(startedAt)) {
-    return true;
-  }
-  const elapsed = now - startedAt;
-  return elapsed < MIN_SUBMIT_MS;
+  const elapsedMs = input.elapsedMs;
+  return !(typeof elapsedMs === "number" && elapsedMs >= MIN_SUBMIT_MS);
 }
 
 export type QuoteFieldsResult = { ok: true; value: Quote } | { ok: false; errors: QuoteErrors };
@@ -136,12 +132,12 @@ export function validateQuoteFields(input: unknown): QuoteFieldsResult {
   };
 }
 
-export function validateQuote(input: unknown, now: number): QuoteResult {
+export function validateQuote(input: unknown): QuoteResult {
   if (!isRecord(input)) {
     return { ok: false, errors: {}, spam: false };
   }
   const fields = validateQuoteFields(input);
-  const spam = isSpam(input, now);
+  const spam = isSpam(input);
   if (!fields.ok) {
     return { ok: false, errors: fields.errors, spam };
   }
@@ -155,7 +151,7 @@ export function byteLength(value: string): number {
   return new TextEncoder().encode(value).length;
 }
 
-export function parseQuoteRequest(body: string, now: number): QuoteResult {
+export function parseQuoteRequest(body: string): QuoteResult {
   if (byteLength(body) > MAX_BODY_BYTES) {
     return { ok: false, errors: {}, spam: false, tooLarge: true };
   }
@@ -165,7 +161,7 @@ export function parseQuoteRequest(body: string, now: number): QuoteResult {
   } catch {
     return { ok: false, errors: {}, spam: false };
   }
-  return validateQuote(data, now);
+  return validateQuote(data);
 }
 
 export const DEFAULT_INTRO = "New quote request from the website";
