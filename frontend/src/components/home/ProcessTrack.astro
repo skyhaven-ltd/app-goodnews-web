@@ -1,0 +1,48 @@
+---
+import { Picture } from "astro:assets";
+
+export interface ProcessStep {
+  title: string;
+  text: string;
+  image: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  labelledBy: string;
+  steps: ProcessStep[];
+}
+
+const { labelledBy, steps } = Astro.props;
+---
+
+<div
+  role="region"
+  aria-labelledby={labelledBy}
+  tabindex="0"
+  class="mt-8 snap-x snap-mandatory overflow-x-auto overscroll-x-contain pb-6 focus-visible:outline-baby"
+>
+  <ol class="flex w-max gap-4 px-4 md:gap-5 md:px-[max(2rem,calc((100vw-72rem)/2+2rem))]">
+    {
+      steps.map((step, index) => (
+        <li class="w-[78vw] max-w-80 shrink-0 snap-start scroll-ml-4 overflow-hidden rounded-brand bg-ground/5 md:scroll-ml-8">
+          <Picture
+            src={step.image}
+            alt={step.alt}
+            formats={["avif", "webp"]}
+            widths={[320, 480, 640]}
+            width={640}
+            sizes="(min-width: 48rem) 20rem, 78vw"
+            loading="lazy"
+            class="aspect-[4/3] w-full object-cover"
+          />
+          <div class="p-5">
+            <p class="font-heading text-sm font-extrabold tracking-[0.12em] text-baby">STEP {String(index + 1).padStart(2, "0")}</p>
+            <h3 class="mt-1 text-xl text-ground">{step.title}</h3>
+            <p class="mt-1 text-pale">{step.text}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>

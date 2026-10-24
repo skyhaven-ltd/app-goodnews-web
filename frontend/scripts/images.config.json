@@ -1,0 +1,42 @@
+{
+  "source": "photos",
+  "output": "src/assets/projects",
+  "maxEdge": 1600,
+  "maxBytes": 300000,
+  "quality": 82,
+  "minQuality": 60,
+  "photos": [
+    { "source": "07cd5142-b03c-4646-b1b7-fe916f5ed443.JPG", "output": "plastered-room-with-tools.jpg", "cropBottom": 90 },
+    { "source": "1ae0db95-8cc4-42b7-8d0f-87f2974028fb.JPG", "output": "steel-beams-and-ceiling-joists.jpg" },
+    { "source": "1cfbc3a8-e824-495a-a3b3-47b64477baae.JPG", "output": "close-board-fence.jpg" },
+    { "source": "23338a5f-7111-434d-8ebc-71dffe059423.JPG", "output": "finished-landing.jpg" },
+    { "source": "2b798aad-07ee-482f-80fa-094491028987.JPG", "output": "plastered-loft-room.jpg" },
+    { "source": "2c3454b0-676c-4d41-9920-bb34313aed8b.JPG", "output": "plastering-large-room.jpg" },
+    { "source": "2e4da27c-ecff-4141-9198-326e38370629.JPG", "output": "timber-floor-joists.jpg", "cropBottom": 90 },
+    { "source": "35f0e640-55d2-485d-8718-09ba751f9559.JPG", "output": "freshly-plastered-wall.jpg", "cropBottom": 90 },
+    { "source": "4306808c-64e7-4649-a24f-8160532c2563.JPG", "output": "fitted-kitchen.jpg" },
+    { "source": "4898b5bb-05c0-4205-999a-38b777a74f4c.JPG", "output": "plastered-hallway.jpg" },
+    { "source": "4b9a82bd-0bf6-4c4a-9665-e18ee9f7dbc4.JPG", "output": "plastered-window-reveal.jpg", "cropBottom": 90 },
+    { "source": "4d3c0024-a2e0-4205-8c0b-9e89b20db77c.JPG", "output": "stair-wall-panelling.jpg", "cropBottom": 90 },
+    { "source": "5797725c-1b64-4e21-8791-8bd423844751.JPG", "output": "plasterboarded-corridor.jpg" },
+    { "source": "5e444116-5ad2-4ac4-a71f-d6b76e14a5ad.JPG", "output": "plastered-wall-with-access-panel.jpg", "cropBottom": 90 },
+    { "source": "5e5585df-aa7c-411f-afb8-2310885d95ab.JPG", "output": "vaulted-ceiling.jpg" },
+    { "source": "6168470a-1a13-42f1-b4f7-95d16b92ee3a.JPG", "output": "plastered-alcove-in-kitchen.jpg" },
+    { "source": "766d2e5e-c29d-4624-9c07-fbbf6fba304b.JPG", "output": "plastered-stairwell.jpg", "cropBottom": 90 },
+    { "source": "7fffb4b2-286d-462e-99b6-581f88ecc8ed.JPG", "output": "finished-bedroom.jpg" },
+    { "source": "81cbcd0c-945e-42df-b175-4271ea5a9c84.JPG", "output": "plastered-stair-bulkhead.jpg", "cropBottom": 90 },
+    { "source": "b4860bcb-f167-4e63-94a4-3e6e9fa1096a.JPG", "output": "extension-roof-rafters.jpg" },
+    { "source": "bf7f165b-96b8-4d55-8459-764b519e17d4.JPG", "output": "fence-along-cleared-garden.jpg" },
+    { "source": "c56c5619-8d5c-4c16-bc6b-92b0ba296a8b.JPG", "output": "plastered-landing-with-loft-hatch.jpg" },
+    { "source": "ca75e3bf-1440-48fb-add9-1f9c5eb1ac64.JPG", "output": "loft-conversion-stud-framing.jpg" },
+    { "source": "dffd2767-aca7-48b4-a55d-d18035b42c0e.JPG", "output": "wall-panelling-in-progress.jpg", "cropBottom": 90 },
+    { "source": "e4120d11-7813-4c0d-a529-4227d5ca682a.JPG", "output": "plastered-narrow-staircase.jpg" },
+    { "source": "e688ec3b-4f01-41d0-9533-9368fb2f0fad.JPG", "output": "roof-insulation-boards.jpg" },
+    { "source": "f534c9f7-061c-43c2-9fa6-51ffc6c3305b.JPG", "output": "kitchen-hob-and-oven.jpg" },
+    { "source": "fce8f433-8222-4dc9-bb1e-036039d54a17.JPG", "output": "raised-timber-planters.jpg" }
+  ],
+  "excluded": [
+    { "source": "76322283-04fc-47b2-8157-40f9c0f59bb0.JPG", "reason": "Too blurred to use" },
+    { "source": "d04a57fc-4187-4e70-bd6f-1c53d6e8de21.JPG", "reason": "Full street-facing exterior of a customer's house; needs the customer's consent first" }
+  ]
+}

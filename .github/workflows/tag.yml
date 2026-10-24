@@ -1,0 +1,16 @@
+name: Tag
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions: {}
+
+jobs:
+  Tag:
+    permissions:
+      contents: write
+    uses: skyhaven-ltd/pipeline-engineering-github-actions/.github/workflows/reusable-tag.yml@6cfa143b42ff464e4101d69c09945db9fac369e5

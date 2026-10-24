@@ -1,0 +1,87 @@
+---
+import { Picture } from "astro:assets";
+
+interface Side {
+  image: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  before: Side;
+  after: Side;
+}
+
+const { before, after } = Astro.props;
+const widths = [480, 800, 1200];
+const sizes = "(min-width: 64rem) 40rem, 100vw";
+const labelClass =
+  "pointer-events-none absolute top-3 rounded-brand px-3 py-1 font-heading text-sm font-bold uppercase tracking-wide";
+---
+
+<div
+  data-before-after
+  class="relative aspect-[4/3] touch-pan-y select-none overflow-hidden rounded-brand bg-pale has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
+  style="--split: 50%"
+>
+  <Picture
+    src={after.image}
+    alt={after.alt}
+    formats={["avif", "webp"]}
+    widths={widths}
+    width={1200}
+    sizes={sizes}
+    loading="lazy"
+    draggable="false"
+    class="absolute inset-0 size-full object-cover"
+  />
+  <div class="before absolute inset-0">
+    <Picture
+      src={before.image}
+      alt={before.alt}
+      formats={["avif", "webp"]}
+      widths={widths}
+      width={1200}
+      sizes={sizes}
+      loading="lazy"
+      draggable="false"
+      class="absolute inset-0 size-full object-cover"
+    />
+  </div>
+  <span aria-hidden="true" class="divider pointer-events-none absolute inset-y-0 -ml-0.5 w-1 bg-ground">
+    <span class="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ground text-navy shadow-md">
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 6l-6 6 6 6M15 6l6 6-6 6"></path>
+      </svg>
+    </span>
+  </span>
+  <span class:list={[labelClass, "left-3 bg-navy text-ground"]}>Before</span>
+  <span class:list={[labelClass, "right-3 bg-baby text-navy"]}>After</span>
+  <input
+    type="range"
+    min="0"
+    max="100"
+    step="1"
+    value="50"
+    aria-label="Compare before and after"
+    data-before-after-input
+    class="pointer-events-none absolute inset-0 size-full opacity-0"
+  />
+</div>
+
+<style>
+  .before {
+    clip-path: inset(0 calc(100% - var(--split)) 0 0);
+  }
+
+  .divider {
+    left: var(--split);
+  }
+</style>
+
+<script>
+  import { initBeforeAfter } from "../../scripts/before-after";
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-before-after]")) {
+    initBeforeAfter(root);
+  }
+</script>

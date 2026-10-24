@@ -1,0 +1,142 @@
+name: Static Web App
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - "functions/**"
+      - ".github/workflows/swa.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - "functions/**"
+      - ".github/workflows/swa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+
+      - name: Install site dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Check site
+        run: npm run check
+        working-directory: frontend
+
+      - name: Unit test site
+        run: npm test
+        working-directory: frontend
+
+      - name: Build site
+        run: npm run build
+        working-directory: frontend
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+        working-directory: frontend
+
+      - name: End-to-end test site
+        run: npm run test:e2e
+        working-directory: frontend
+
+      - name: Install API dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Unit test API
+        run: npm test
+        working-directory: functions
+
+      - name: Build API
+        run: npm run build
+        working-directory: functions
+
+  deploy:
+    name: Deploy to SWA
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    environment: prd
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+
+      - name: Azure login
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch SWA hostname
+        id: swa-host
+        run: |
+          HOST=$(az staticwebapp show \
+            --name "stapp-goodnews-prd-uks-01" \
+            --resource-group "rg-goodnews-prd-uks-01" \
+            --query "defaultHostname" -o tsv)
+          test -n "$HOST"
+          echo "site_url=https://$HOST" >> "$GITHUB_OUTPUT"
+
+      - name: Build site
+        run: |
+          npm ci
+          npm run build
+        working-directory: frontend
+        env:
+          SITE_URL: ${{ steps.swa-host.outputs.site_url }}
+
+      - name: Build API
+        run: |
+          npm ci
+          npm run build
+          npm prune --omit=dev
+        working-directory: functions
+
+      - name: Fetch SWA deployment token
+        id: swa-token
+        run: |
+          TOKEN=$(az staticwebapp secrets list \
+            --name "stapp-goodnews-prd-uks-01" \
+            --resource-group "rg-goodnews-prd-uks-01" \
+            --query "properties.apiKey" -o tsv)
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Static Web App
+        uses: azure/static-web-apps-deploy@4d27395796ac319302594769cfe812bd207490b1 # v1.0.0
+        with:
+          azure_static_web_apps_api_token: ${{ steps.swa-token.outputs.token }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: frontend/dist
+          api_location: functions
+          output_location: ""
+          skip_app_build: true
+          skip_api_build: true

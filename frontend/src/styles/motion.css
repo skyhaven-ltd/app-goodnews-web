@@ -1,0 +1,103 @@
+@keyframes motion-skim {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes motion-fade {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-motion~="skim"] {
+  display: block;
+}
+
+[data-motion~="fill"] {
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion~="skim"] {
+    animation: motion-skim 0.8s cubic-bezier(0.7, 0, 0.2, 1) both;
+  }
+
+  [data-motion~="skim"] + [data-motion~="skim"] {
+    animation-delay: 0.2s;
+  }
+
+  [data-motion~="fade"] {
+    animation: motion-fade 0.7s 0.5s ease-out both;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  [data-motion~="lift"] {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  [data-motion~="lift"]:hover {
+    box-shadow: 0 18px 40px rgb(14 42 71 / 0.14);
+    transform: translateY(-6px);
+  }
+
+  [data-motion~="lift"] img {
+    transition: transform 0.6s ease;
+  }
+
+  [data-motion~="lift"]:hover img {
+    transform: scale(1.05);
+  }
+
+  [data-motion~="fill"]::before {
+    background: var(--color-baby, #a8d4f2);
+    content: "";
+    inset: 0;
+    position: absolute;
+    transform: translateY(101%);
+    transition: transform 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+    z-index: -1;
+  }
+
+  [data-motion~="fill"]:hover {
+    color: var(--color-navy, #0e2a47);
+  }
+
+  [data-motion~="fill"]:hover::before {
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-motion~="rise"] {
+      animation: motion-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
