@@ -18,3 +18,10 @@ test("an unknown URL shows the 404 page with ways back", async ({ page }) => {
   }
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
 });
+
+test("the 404 page speaks as we, without naming Darren", async ({ page }) => {
+  await page.goto("/no-such-page");
+  const text = await page.locator("main").innerText();
+  expect(text).not.toMatch(/Darren|\b(he|him|his)\b/i);
+  await expect(page.locator("main").locator('a[href^="tel:"]')).toHaveCount(1);
+});
