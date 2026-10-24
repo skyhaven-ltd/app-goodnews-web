@@ -21,6 +21,7 @@ export default defineConfig({
     command: `npm run build && npm run preview -- --port ${port}`,
     url: `http://localhost:${port}`,
     reuseExistingServer: !ci,
+    env: { E2E_FIXTURES: "1" },
     timeout: 120_000,
   },
 });

@@ -1,0 +1,17 @@
+---
+import Base from "../../src/layouts/Base.astro";
+import BeforeAfter from "../../src/components/home/BeforeAfter.astro";
+import { projectByFile } from "../../src/data/projects";
+
+const before = projectByFile("plastered-loft-room.jpg");
+const after = projectByFile("finished-bedroom.jpg");
+---
+
+<Base title="Before and after test fixture" description="Test fixture for the before and after slider, built only for end-to-end tests." noindex>
+  <section class="mx-auto max-w-3xl px-4 py-10">
+    <h1 class="text-3xl">Before and after fixture</h1>
+    <div class="mt-6">
+      <BeforeAfter before={before} after={after} />
+    </div>
+  </section>
+</Base>

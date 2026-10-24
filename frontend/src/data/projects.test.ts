@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import config from "../../scripts/images.config.json";
 import { QUOTE_SERVICES } from "../lib/quote";
-import { projects } from "./projects";
+import { beforeAfterPairs, projectByFile, projects } from "./projects";
 
 const outputs = Object.keys(import.meta.glob("../assets/projects/*")).map((path) => path.split("/").pop()).sort();
 const originals = Object.keys(import.meta.glob("../../photos/*")).map((path) => path.split("/").pop()).sort();
@@ -25,6 +25,18 @@ describe("projects", () => {
       expect(project.alt.length, project.file).toBeGreaterThan(20);
       expect(project.image, project.file).toBeTruthy();
       expect(QUOTE_SERVICES).toContain(project.service);
+    }
+  });
+
+  it("finds projects by file and rejects unknown files", () => {
+    expect(projectByFile("finished-landing.jpg").service).toBe("Painting & Decorating");
+    expect(() => projectByFile("missing.jpg")).toThrow("Unknown project missing.jpg");
+  });
+
+  it("pairs before and after photos only as two different shots of a named room", () => {
+    for (const pair of beforeAfterPairs) {
+      expect(pair.room.length, pair.before.file).toBeGreaterThan(3);
+      expect(pair.before.file).not.toBe(pair.after.file);
     }
   });
 });

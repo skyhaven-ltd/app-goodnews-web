@@ -51,3 +51,25 @@ const entries: Omit<Project, "image">[] = [
 ];
 
 export const projects: Project[] = entries.map((entry) => ({ ...entry, image: image(entry.file) }));
+
+export function projectByFile(file: string): Project {
+  const project = projects.find((entry) => entry.file === file);
+  if (!project) {
+    throw new Error(`Unknown project ${file}`);
+  }
+  return project;
+}
+
+export interface BeforeAfterPair {
+  room: string;
+  before: Project;
+  after: Project;
+}
+
+const pairEntries: { room: string; before: string; after: string }[] = [];
+
+export const beforeAfterPairs: BeforeAfterPair[] = pairEntries.map((pair) => ({
+  room: pair.room,
+  before: projectByFile(pair.before),
+  after: projectByFile(pair.after),
+}));
