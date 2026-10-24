@@ -33,9 +33,3 @@ variable "instance" {
   type        = string
   default     = "01"
 }
-
-variable "quote_provider" {
-  description = "Delivery provider used by POST /api/quote; none makes the form fall back to WhatsApp, SMS and phone"
-  type        = string
-  default     = "none"
-}

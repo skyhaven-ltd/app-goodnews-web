@@ -6,10 +6,6 @@ resource "azurerm_static_web_app" "this" {
   sku_size            = "Free"
   tags                = local.tags
 
-  app_settings = {
-    QUOTE_PROVIDER = var.quote_provider
-  }
-
   lifecycle {
     ignore_changes = [
       repository_branch,
