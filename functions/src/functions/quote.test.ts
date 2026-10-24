@@ -136,7 +136,10 @@ describe("POST /api/quote", () => {
 
   it("returns 400 for an oversized body without sending", async () => {
     const { notifier, handler, context } = setup({ provider: "fake" });
-    const response = await handler(post({ ...valid, description: "x".repeat(MAX_BODY_BYTES) }), context);
+    const control = await handler(post({ ...valid, padding: "x" }), context);
+    expect(control.status).toBe(200);
+    notifier.sent.length = 0;
+    const response = await handler(post({ ...valid, padding: "x".repeat(MAX_BODY_BYTES) }), context);
     expect(response.status).toBe(400);
     expect(notifier.sent).toHaveLength(0);
   });
