@@ -42,15 +42,15 @@ test.describe("home page", () => {
     await page.goto("/");
     const hero = page.locator("#hero");
     await expect(page.getByRole("heading", { level: 1 })).toBeInViewport({ ratio: 1 });
-    await expect(hero.getByRole("link", { name: /free quote/i })).toBeInViewport({ ratio: 1 });
-    await expect(hero.getByRole("link", { name: /free quote/i })).toHaveAttribute("href", "/quote");
+    await expect(hero.getByRole("link", { name: /get a quote/i })).toBeInViewport({ ratio: 1 });
+    await expect(hero.getByRole("link", { name: /get a quote/i })).toHaveAttribute("href", "/quote");
     await expect(hero.getByRole("link", { name: /WhatsApp/ })).toHaveAttribute("href", /^https:\/\/wa\.me\/447456182265/);
   });
 
   test("at 360px the hero actions fit above the contact bar and nothing scrolls sideways", async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 740 });
     await page.goto("/");
-    const action = page.locator("#hero").getByRole("link", { name: /free quote/i });
+    const action = page.locator("#hero").getByRole("link", { name: /get a quote/i });
     await expect(action).toBeInViewport({ ratio: 1 });
     const box = await action.boundingBox();
     const viewport = page.viewportSize();

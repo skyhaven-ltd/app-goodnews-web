@@ -41,6 +41,14 @@ test("every link on every page resolves", async ({ page, request }) => {
   }
 });
 
+test("no page claims free quotes or a single tradesman", async ({ request }) => {
+  for (const path of await sitePages(request)) {
+    const html = await (await request.get(path)).text();
+    expect(html, path).not.toMatch(/free (quote|price)/i);
+    expect(html, path).not.toMatch(/one tradesman/i);
+  }
+});
+
 test("no page ships an image file over 300 KB", async ({ page, request }) => {
   const referenced = new Set<string>();
   for (const path of await sitePages(request)) {

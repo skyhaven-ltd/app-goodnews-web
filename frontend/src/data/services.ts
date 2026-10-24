@@ -24,7 +24,7 @@ const leadEntries: (Omit<LeadService, "photo" | "photos"> & { photo: string })[]
     slug: "plastering",
     name: "Plastering",
     title: "Plastering in Birmingham & Worcestershire | Good News Plastering",
-    description: "Skimming, plasterboarding and ceilings by Darren Goodchild, a plasterer with over 25 years in the trade. Free quotes.",
+    description: "Skimming, plasterboarding and ceilings by Darren Goodchild, a plasterer with over 25 years in the trade.",
     summary: "Skimming, boarding and ceilings, from single walls to whole floors.",
     intro: [
       "Plastering is Darren's main service, and he has more than 25 years in the trade.",
@@ -60,7 +60,7 @@ const leadEntries: (Omit<LeadService, "photo" | "photos"> & { photo: string })[]
     summary: "Fencing, clearances and raised planters.",
     intro: [
       "Outside the house, Darren puts up fences, clears overgrown gardens and builds timber planters.",
-      "Tell him what the garden needs and he will give you a free quote.",
+      "Tell him what the garden needs and he will give you a quote.",
     ],
     includes: ["Close-board fencing with concrete posts", "Gravel boards", "Garden clearances", "Raised timber planters"],
     photo: "close-board-fence.jpg",
