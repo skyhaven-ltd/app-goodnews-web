@@ -1,0 +1,33 @@
+---
+import { Picture } from "astro:assets";
+import type { Project } from "../data/projects";
+
+interface Props {
+  projects: Project[];
+  eager?: number;
+}
+
+const { projects, eager = 0 } = Astro.props;
+---
+
+<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  {
+    projects.map((project, index) => (
+      <li>
+        <figure class="h-full overflow-hidden rounded-brand border border-line bg-ground">
+          <Picture
+            src={project.image}
+            alt={project.alt}
+            formats={["avif", "webp"]}
+            widths={[400, 640, 800]}
+            width={800}
+            sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 50vw, 100vw"
+            loading={index < eager ? "eager" : "lazy"}
+            class="aspect-[4/3] w-full object-cover"
+          />
+          <figcaption class="px-4 py-3 font-heading text-sm font-bold uppercase tracking-wide text-navy">{project.service}</figcaption>
+        </figure>
+      </li>
+    ))
+  }
+</ul>
