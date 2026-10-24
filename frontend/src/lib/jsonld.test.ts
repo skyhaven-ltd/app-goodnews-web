@@ -13,6 +13,7 @@ describe("buildLocalBusiness", () => {
       name: "Good News Plastering",
       url: "https://example.test/",
       telephone: "+447456182265",
+      email: "dazlan73@gmail.com",
       founder: { "@type": "Person", name: "Darren Goodchild" },
       address: { "@type": "PostalAddress", addressCountry: "GB" },
     });
@@ -48,7 +49,6 @@ describe("buildLocalBusiness", () => {
     const data = buildLocalBusiness({ site });
     const json = JSON.stringify(data);
     expect(json).not.toContain("PLACEHOLDER");
-    expect(data).not.toHaveProperty("email");
     expect(data).not.toHaveProperty("image");
     expect(data).not.toHaveProperty("aggregateRating");
     expect(data).not.toHaveProperty("review");

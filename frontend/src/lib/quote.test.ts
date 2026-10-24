@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { business } from "../data/business";
+import { PLACEHOLDER, business } from "../data/business";
 import {
   QUOTE_SERVICES,
   buildSmsUrl,
@@ -27,8 +27,9 @@ describe("business config", () => {
     expect(business.whatsapp).toBe("447456182265");
   });
 
-  it("marks unknown values as placeholders", () => {
-    expect(business.email).toBe("[PLACEHOLDER]");
+  it("holds the contact email and keeps the placeholder marker", () => {
+    expect(business.email).toBe("dazlan73@gmail.com");
+    expect(PLACEHOLDER).toBe("[PLACEHOLDER]");
   });
 });
 
