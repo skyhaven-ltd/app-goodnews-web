@@ -87,14 +87,14 @@ jobs:
             -var-file="vars/${TF_ENV}.tfvars"
 
       - name: "Terraform Apply"
-        if: env.TF_ACTION == 'apply'
+        if: env.TF_ACTION == 'apply' && github.ref == 'refs/heads/main'
         run: |
           terraform -chdir=infra apply -auto-approve \
             -var-file="vars/globals.tfvars" \
             -var-file="vars/${TF_ENV}.tfvars"
 
       - name: "Terraform Destroy"
-        if: env.TF_ACTION == 'destroy'
+        if: env.TF_ACTION == 'destroy' && github.ref == 'refs/heads/main'
         run: |
           terraform -chdir=infra destroy -auto-approve \
             -var-file="vars/globals.tfvars" \
