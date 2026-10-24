@@ -9,21 +9,11 @@ import {
 } from "../lib/quote";
 
 const FIELD_ORDER: QuoteField[] = ["name", "phone", "postcode", "service", "description"];
-const DEFAULT_TIMEOUT_MS = 10_000;
 
 export function initQuoteForm(form: HTMLFormElement) {
   const whatsappNumber = form.dataset.whatsapp ?? "";
   const smsNumber = form.dataset.sms ?? "";
-  const sendButton = form.querySelector<HTMLButtonElement>("[data-action=send]")!;
-  const sendLabel = sendButton.querySelector<HTMLElement>("[data-label]")!;
-  const whatsappButton = form.querySelector<HTMLButtonElement>("[data-action=whatsapp]")!;
-  const success = form.querySelector<HTMLElement>("[data-testid=quote-success]")!;
-  const fallback = form.querySelector<HTMLElement>("[data-testid=quote-fallback]")!;
-  const fallbackWhatsApp = fallback.querySelector<HTMLAnchorElement>("[data-fallback=whatsapp]")!;
-  const fallbackSms = fallback.querySelector<HTMLAnchorElement>("[data-fallback=sms]")!;
-  const idleLabel = sendLabel.textContent ?? "";
-  let startedAt = performance.now();
-  let sending = false;
+  const smsLink = form.querySelector<HTMLAnchorElement>("[data-action=sms]")!;
 
   function readFields() {
     const data = new FormData(form);
@@ -77,89 +67,21 @@ export function initQuoteForm(form: HTMLFormElement) {
     return result.ok ? result.value : undefined;
   }
 
-  function customerMessage(quote: Quote) {
-    return formatQuoteMessage(quote);
-  }
-
-  function updateFallbackLinks(quote: Quote) {
-    const message = customerMessage(quote);
-    fallbackWhatsApp.href = buildWhatsAppUrl(whatsappNumber, message);
-    fallbackSms.href = buildSmsUrl(smsNumber, message);
-  }
-
-  function setSending(value: boolean) {
-    sending = value;
-    sendButton.disabled = value;
-    whatsappButton.disabled = value;
-    sendLabel.textContent = value ? "Sending…" : idleLabel;
-    form.setAttribute("aria-busy", String(value));
-  }
-
-  function showPanel(panel: HTMLElement | null) {
-    success.hidden = panel !== success;
-    fallback.hidden = panel !== fallback;
-    panel?.focus();
-  }
-
-  async function postQuote(quote: Quote): Promise<boolean> {
-    const controller = new AbortController();
-    const timeout = Number(form.dataset.timeout) || DEFAULT_TIMEOUT_MS;
-    const timer = setTimeout(() => controller.abort(), timeout);
-    try {
-      const website = String(new FormData(form).get("website") ?? "");
-      const elapsedMs = Math.round(performance.now() - startedAt);
-      const response = await fetch("/api/quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...quote, website, elapsedMs }),
-        signal: controller.signal,
-      });
-      return response.ok;
-    } catch {
-      return false;
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (sending) {
-      return;
-    }
     const quote = checkFields();
     if (!quote) {
       return;
     }
-    showPanel(null);
-    setSending(true);
-    const sent = await postQuote(quote);
-    setSending(false);
-    if (sent) {
-      form.reset();
-      startedAt = performance.now();
-      showPanel(success);
-    } else {
-      updateFallbackLinks(quote);
-      showPanel(fallback);
-    }
+    window.location.assign(buildWhatsAppUrl(whatsappNumber, formatQuoteMessage(quote)));
   });
 
-  whatsappButton.addEventListener("click", () => {
+  smsLink.addEventListener("click", (event) => {
     const quote = checkFields();
     if (!quote) {
+      event.preventDefault();
       return;
     }
-    window.location.assign(buildWhatsAppUrl(whatsappNumber, customerMessage(quote)));
-  });
-
-  form.addEventListener("input", () => {
-    if (fallback.hidden) {
-      return;
-    }
-    const result = validateQuoteFields(readFields());
-    if (result.ok) {
-      updateFallbackLinks(result.value);
-    }
+    smsLink.href = buildSmsUrl(smsNumber, formatQuoteMessage(quote));
   });
 }
