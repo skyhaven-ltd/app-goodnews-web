@@ -86,6 +86,15 @@ for (const width of widths) {
     });
 
     if (width < 768) {
+      test("every page shows the contact bar", async ({ page, request }) => {
+        for (const path of await sitePages(request)) {
+          await page.goto(path);
+          const bar = page.getByRole("navigation", { name: "Contact" });
+          await expect(bar, path).toBeVisible();
+          await expect(bar, path).toBeInViewport();
+        }
+      });
+
       test("every tap target is at least 44px and body text at least 16px", async ({ page, request }) => {
         for (const path of await sitePages(request)) {
           await page.goto(path);
