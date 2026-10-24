@@ -27,7 +27,7 @@ const leadEntries: (Omit<LeadService, "photo" | "photos"> & { photo: string })[]
     description: "Skimming, plasterboarding and ceilings by Darren Goodchild, a plasterer with over 25 years in the trade. Free quotes.",
     summary: "Skimming, boarding and ceilings, from single walls to whole floors.",
     intro: [
-      "Plastering is where Darren started, and it is still most of his work after more than 25 years in the trade.",
+      "Plastering is Darren's main service, and he has more than 25 years in the trade.",
       "He plasters single walls, whole rooms, hallways, stairwells and loft rooms, and boards out new walls and ceilings ready to skim.",
     ],
     includes: [

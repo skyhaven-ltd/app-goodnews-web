@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { areaHref, areas } from "./areas";
 
-const banned = /insured|accredit|guarantee|review|award|certified|approved|testimonial|best in|number one|no\.? ?1|free/i;
+const banned = /insured|accredit|guarantee|review|award|certified|approved|testimonial|best in|number one|no\.? ?1|free|started with|most of his work/i;
 const pastWork =
   /\b(has|have|had)\s+(already\s+)?(worked|done|completed|finished|plastered|decorated|fitted|built)\b|\b(recent|previous|past|completed)\s+(jobs?|work|projects?)\b|\b(customers|clients|homeowners)\s+(in|across)\b[^.]*\b(say|chose|trust)\b|\d+\s*(jobs|customers|clients|homes)/i;
 

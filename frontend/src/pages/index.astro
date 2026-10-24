@@ -23,11 +23,11 @@ const services = [
 ];
 
 const steps: ProcessStep[] = [
-  { title: "Prepare", text: "Boards down and the room cleared before work starts.", file: "plastering-large-room.jpg" },
+  { title: "Prepare", text: "Plastering under way in a large room, with boards across the floor.", file: "plastering-large-room.jpg" },
   { title: "Board", text: "New plasterboard fixed to walls and ceilings, ready to skim.", file: "plasterboarded-corridor.jpg" },
   { title: "Skim", text: "A smooth skim coat across walls and ceilings.", file: "plastered-stairwell.jpg" },
   { title: "Detail", text: "Panelling, mouldings and woodwork fitted.", file: "wall-panelling-in-progress.jpg" },
-  { title: "Decorate", text: "Painted, tidied and handed back to you.", file: "finished-landing.jpg" },
+  { title: "Decorate", text: "A finished landing with painted walls and white doors.", file: "finished-landing.jpg" },
 ].map(({ file, ...step }) => {
   const project = projectByFile(file);
   return { ...step, image: project.image, alt: project.alt };

@@ -19,7 +19,7 @@ const entries: Omit<Area, "title">[] = [
     description: "Plastering, painting and decorating, and garden work in Solihull by Darren Goodchild, with over 25 years in the trade.",
     copy: [
       "Solihull is a town in the West Midlands, south-east of Birmingham, and the centre of the Metropolitan Borough of Solihull. Darren Goodchild takes on plastering, painting and decorating, and garden work for homeowners across the town and the borough around it.",
-      "Most of his work is plastering: skimming tired walls, boarding out new ceilings and bringing stairwells and landings back to a smooth finish. Because he decorates as well, a Solihull room can go from bare plaster to painted walls and woodwork without you finding a second tradesman. If the job is bigger than one room, such as a kitchen refit, new wall panelling or a loft room, mention it when you get in touch and he will say what he can take on.",
+      "Plastering is his main service: skimming tired walls, boarding out new ceilings and bringing stairwells and landings back to a smooth finish. Because he decorates as well, a Solihull room can go from bare plaster to painted walls and woodwork without you finding a second tradesman. If the job is bigger than one room, such as a kitchen refit, new wall panelling or a loft room, mention it when you get in touch and he will say what he can take on.",
       "Outside, he puts up close-board fences with concrete posts, clears overgrown gardens and builds raised timber planters.",
       "To get a price, use the quote form on this site, send a WhatsApp message with a few photos of the walls or garden, or ring him directly. He will reply by WhatsApp or phone to talk the job through.",
     ],
@@ -43,7 +43,7 @@ const entries: Omit<Area, "title">[] = [
     description: "Plastering, ceilings, decorating and garden work in Sutton Coldfield by Darren Goodchild. Ask for a quote online or by phone.",
     copy: [
       "Sutton Coldfield is a town in the north of the City of Birmingham, home to the large open space of Sutton Park. Darren covers homes across Sutton Coldfield for plastering, painting and decorating, and gardening.",
-      "On the plastering side, that means skimming over old walls, boarding and skimming new partitions, and plastering ceilings, bulkheads and stairwells. He has more than 25 years in the trade, and plastering is the work he started with. Once the plaster is dry he can paint the walls and ceilings and finish the doors and skirting, including high or vaulted ceilings.",
+      "On the plastering side, that means skimming over old walls, boarding and skimming new partitions, and plastering ceilings, bulkheads and stairwells. He has more than 25 years in the trade, and plastering is his main service. Once the plaster is dry he can paint the walls and ceilings and finish the doors and skirting, including high or vaulted ceilings.",
       "He also takes on kitchen fitting, timber joists and framing, and the carpentry and boarding inside loft conversions. For gardens, ask about close-board fencing, clearances and raised planters.",
       "Send your details through the quote form, and Darren will come back to you by WhatsApp or phone about the job in Sutton Coldfield. You can also ring him if you would rather explain the job over the phone.",
     ],

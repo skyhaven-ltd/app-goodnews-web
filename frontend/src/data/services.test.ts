@@ -3,7 +3,7 @@ import { QUOTE_SERVICES } from "../lib/quote";
 import { serviceNav } from "./navigation";
 import { leadServices, secondaryServices, serviceHref } from "./services";
 
-const banned = /insured|accredit|guarantee|review|award|certified|approved|best in|number one|no\.? ?1/i;
+const banned = /insured|accredit|guarantee|review|award|certified|approved|best in|number one|no\.? ?1|started with|most of his work/i;
 
 describe("services", () => {
   it("gives the lead services the slugs and labels used in the navigation", () => {
