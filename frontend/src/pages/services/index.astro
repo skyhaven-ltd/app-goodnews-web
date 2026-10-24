@@ -15,15 +15,15 @@ const secondaryClass =
 
 <Base
   title={`Services | ${business.name}`}
-  description={`Plastering, painting and decorating, gardening, kitchen fitting, carpentry and loft conversions by ${business.owner}.`}
+  description={`Plastering, painting and decorating, gardening, kitchen fitting, carpentry and loft conversions from ${business.name}.`}
 >
   <section class="bg-pale">
     <div class="mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-16">
-      <p class={eyebrowClass}>What {business.ownerFirstName} does</p>
+      <p class={eyebrowClass}>What we do</p>
       <h1 class="mt-2 text-4xl tracking-tight md:text-6xl">Services</h1>
       <p class="mt-4 max-w-prose text-lg">
-        {business.owner} has over 25 years in the trade. Plastering, decorating and gardening are the main work, and he
-        takes on the related jobs below too.
+        We've got over 25 years in the trade. Plastering, decorating and gardening are our main work, and we
+        take on the related jobs below too.
       </p>
     </div>
   </section>
@@ -43,7 +43,7 @@ const secondaryClass =
 
   <section class="mx-auto max-w-6xl px-4 pb-12 md:px-8 md:pb-20" aria-labelledby="secondary-services">
     <h2 id="secondary-services" class="text-3xl tracking-tight md:text-4xl">Also available</h2>
-    <p class="mt-3 max-w-prose">Ask about these when you request a quote.</p>
+    <p class="mt-3 max-w-prose">Just ask about these when you get in touch for a quote.</p>
     <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
         secondaryServices.map((service) => (

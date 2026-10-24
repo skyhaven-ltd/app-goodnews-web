@@ -60,3 +60,11 @@ test("at 360px the area pages do not scroll sideways", async ({ page }) => {
     expect(scrollWidth, path).toBeLessThanOrEqual(clientWidth);
   }
 });
+
+test("the area pages speak as we, without naming Darren", async ({ page }) => {
+  for (const path of ["/areas", ...areas.map((area) => area.path)]) {
+    await page.goto(path);
+    const text = await page.locator("main").innerText();
+    expect(text, path).not.toMatch(/Darren|\b(he|him|his)\b/i);
+  }
+});

@@ -12,17 +12,17 @@ const secondaryClass =
 ---
 
 <Base
-  title={`Areas Covered | ${business.name}`}
-  description={`The areas ${business.owner} covers for plastering, decorating and gardening across Birmingham, Solihull, Worcestershire and Warwickshire.`}
+  title={`Areas covered | ${business.name}`}
+  description={`The areas we cover for plastering, decorating and gardening across Birmingham, Solihull, Worcestershire and Warwickshire.`}
   localBusiness={{ areas: areas.map((area) => area.name) }}
 >
   <section class="bg-pale">
     <div class="mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-16">
-      <p class={eyebrowClass}>Where {business.ownerFirstName} works</p>
+      <p class={eyebrowClass}>Where we work</p>
       <h1 class="mt-2 text-4xl tracking-tight md:text-6xl">Areas covered</h1>
       <p class="mt-4 max-w-prose text-lg">
-        {business.owner} covers Birmingham, Worcestershire and Evesham for plastering, painting and decorating, and
-        gardening. Pick your area to see what he can do there.
+        We cover Birmingham, Worcestershire and Evesham for plastering, painting and decorating, and
+        gardening. Pick your area to see what we can do there.
       </p>
     </div>
   </section>
@@ -45,13 +45,13 @@ const secondaryClass =
       }
     </ul>
     <p class="mt-6 max-w-prose">
-      Not listed? Ask anyway through the quote form and {business.ownerFirstName} will tell you if he can help.
+      Not listed? Ask anyway through the quote form and we'll tell you if we can help.
     </p>
   </section>
 
   <section class="bg-pale">
     <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-12 sm:flex-row sm:items-center sm:justify-between md:px-8">
-      <h2 class="text-2xl tracking-tight md:text-3xl">Talk to {business.ownerFirstName} about your job</h2>
+      <h2 class="text-2xl tracking-tight md:text-3xl">Talk to us about your job</h2>
       <div class="grid gap-3 sm:flex">
         <a href={quoteLink.href} class={primaryClass}>Get a quote</a>
         <a href={telHref} class={secondaryClass}>Call {business.phone.display}</a>
