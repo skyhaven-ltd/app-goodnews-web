@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
-const site = "https://good-news-plastering.invalid";
+const site = globalThis.process?.env.SITE_URL || "https://good-news-plastering.invalid";
 const e2eFixtures = globalThis.process?.env.E2E_FIXTURES === "1";
 
 function fixtures() {
