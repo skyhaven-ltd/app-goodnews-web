@@ -10,9 +10,6 @@ export const QUOTE_SERVICES = [
 
 export type QuoteService = (typeof QUOTE_SERVICES)[number];
 
-export const MIN_SUBMIT_MS = 3000;
-export const MAX_BODY_BYTES = 5 * 1024;
-
 export const FIELD_LIMITS = {
   name: 100,
   phone: 30,
@@ -31,10 +28,6 @@ export interface Quote {
 }
 
 export type QuoteErrors = Partial<Record<QuoteField, string>>;
-
-export type QuoteResult =
-  | { ok: true; value: Quote }
-  | { ok: false; errors: QuoteErrors; spam: boolean; tooLarge?: boolean };
 
 const PHONE_PATTERN = /^(?:\+44|0044|0)(?:7\d{9}|[1-3]\d{8,9}|[589]\d{9})$/;
 const POSTCODE_PATTERN = /^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$/;
@@ -62,15 +55,6 @@ function text(value: unknown): string | undefined {
 
 function isService(value: string): value is QuoteService {
   return (QUOTE_SERVICES as readonly string[]).includes(value);
-}
-
-function isSpam(input: Record<string, unknown>): boolean {
-  const honeypot = input.website;
-  if (honeypot !== undefined && honeypot !== "") {
-    return true;
-  }
-  const elapsedMs = input.elapsedMs;
-  return !(typeof elapsedMs === "number" && elapsedMs >= MIN_SUBMIT_MS);
 }
 
 export type QuoteFieldsResult = { ok: true; value: Quote } | { ok: false; errors: QuoteErrors };
@@ -132,43 +116,9 @@ export function validateQuoteFields(input: unknown): QuoteFieldsResult {
   };
 }
 
-export function validateQuote(input: unknown): QuoteResult {
-  if (!isRecord(input)) {
-    return { ok: false, errors: {}, spam: false };
-  }
-  const fields = validateQuoteFields(input);
-  const spam = isSpam(input);
-  if (!fields.ok) {
-    return { ok: false, errors: fields.errors, spam };
-  }
-  if (spam) {
-    return { ok: false, errors: {}, spam };
-  }
-  return fields;
-}
-
-export function byteLength(value: string): number {
-  return new TextEncoder().encode(value).length;
-}
-
-export function parseQuoteRequest(body: string): QuoteResult {
-  if (byteLength(body) > MAX_BODY_BYTES) {
-    return { ok: false, errors: {}, spam: false, tooLarge: true };
-  }
-  let data: unknown;
-  try {
-    data = JSON.parse(body);
-  } catch {
-    return { ok: false, errors: {}, spam: false };
-  }
-  return validateQuote(data);
-}
-
-export const DEFAULT_INTRO = "New quote request from the website";
-
-export function formatQuoteMessage(quote: Quote, intro: string = DEFAULT_INTRO): string {
+export function formatQuoteMessage(quote: Quote): string {
   return [
-    intro,
+    "Hi, I'd like a quote please.",
     "",
     `Name: ${quote.name}`,
     `Phone: ${quote.phone}`,
@@ -177,6 +127,8 @@ export function formatQuoteMessage(quote: Quote, intro: string = DEFAULT_INTRO):
     "",
     "Job:",
     quote.description,
+    "",
+    "I'll send a few photos of the job in this chat.",
   ].join("\n");
 }
 

@@ -14,7 +14,6 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 export function initQuoteForm(form: HTMLFormElement) {
   const whatsappNumber = form.dataset.whatsapp ?? "";
   const smsNumber = form.dataset.sms ?? "";
-  const intro = `Hi ${form.dataset.owner ?? ""}, I'd like a quote.`;
   const sendButton = form.querySelector<HTMLButtonElement>("[data-action=send]")!;
   const sendLabel = sendButton.querySelector<HTMLElement>("[data-label]")!;
   const whatsappButton = form.querySelector<HTMLButtonElement>("[data-action=whatsapp]")!;
@@ -79,7 +78,7 @@ export function initQuoteForm(form: HTMLFormElement) {
   }
 
   function customerMessage(quote: Quote) {
-    return formatQuoteMessage(quote, intro);
+    return formatQuoteMessage(quote);
   }
 
   function updateFallbackLinks(quote: Quote) {

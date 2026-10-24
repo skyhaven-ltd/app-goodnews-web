@@ -1,16 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { business } from "../data/business";
 import {
-  MAX_BODY_BYTES,
-  MIN_SUBMIT_MS,
   QUOTE_SERVICES,
   buildSmsUrl,
   buildWhatsAppUrl,
   formatQuoteMessage,
   isUkPhone,
   isUkPostcode,
-  parseQuoteRequest,
-  validateQuote,
   validateQuoteFields,
   type Quote,
 } from "./quote";
@@ -21,8 +17,6 @@ const valid = {
   postcode: "b91 3qj",
   service: "Plastering",
   description: "Skim two bedroom ceilings after Artex removal.",
-  website: "",
-  elapsedMs: 60_000,
 };
 
 describe("business config", () => {
@@ -61,9 +55,9 @@ describe("isUkPostcode", () => {
   });
 });
 
-describe("validateQuote", () => {
+describe("validateQuoteFields", () => {
   it("accepts a complete request and normalises it", () => {
-    const result = validateQuote({ ...valid, name: "  Jane Smith " });
+    const result = validateQuoteFields({ ...valid, name: "  Jane Smith " });
     expect(result).toEqual({
       ok: true,
       value: {
@@ -77,21 +71,20 @@ describe("validateQuote", () => {
   });
 
   it("collapses control characters and newlines in the name to a single space", () => {
-    const result = validateQuote({ ...valid, name: "Jane\r\n\r\nPhone: 0800 000000\u0000\tSmith " });
+    const result = validateQuoteFields({ ...valid, name: "Jane\r\n\r\nPhone: 0800 000000\u0000\tSmith " });
     expect(result).toMatchObject({ ok: true, value: { name: "Jane Phone: 0800 000000 Smith" } });
   });
 
   it("reports every missing field", () => {
-    const result = validateQuote({ website: "", elapsedMs: valid.elapsedMs });
+    const result = validateQuoteFields({});
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(Object.keys(result.errors).sort()).toEqual(["description", "name", "phone", "postcode", "service"]);
-      expect(result.spam).toBe(false);
     }
   });
 
   it("rejects fields that are only whitespace", () => {
-    const result = validateQuote({ ...valid, name: "   ", description: "\n\t" });
+    const result = validateQuoteFields({ ...valid, name: "   ", description: "\n\t" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(Object.keys(result.errors).sort()).toEqual(["description", "name"]);
@@ -99,7 +92,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects an invalid phone and postcode", () => {
-    const result = validateQuote({ ...valid, phone: "12345", postcode: "nowhere" });
+    const result = validateQuoteFields({ ...valid, phone: "12345", postcode: "nowhere" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.phone).toBeDefined();
@@ -108,7 +101,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects a service that is not offered", () => {
-    const result = validateQuote({ ...valid, service: "Plumbing" });
+    const result = validateQuoteFields({ ...valid, service: "Plumbing" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.service).toBeDefined();
@@ -116,7 +109,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects fields that are too long", () => {
-    const result = validateQuote({ ...valid, name: "a".repeat(101), description: "b".repeat(2001) });
+    const result = validateQuoteFields({ ...valid, name: "a".repeat(101), description: "b".repeat(2001) });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.name).toBeDefined();
@@ -125,7 +118,7 @@ describe("validateQuote", () => {
   });
 
   it("rejects non-string field values", () => {
-    const result = validateQuote({ ...valid, name: 42, phone: ["07700900123"] });
+    const result = validateQuoteFields({ ...valid, name: 42, phone: ["07700900123"] });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.name).toBeDefined();
@@ -133,41 +126,10 @@ describe("validateQuote", () => {
     }
   });
 
-  it("rejects a filled honeypot as spam", () => {
-    const result = validateQuote({ ...valid, website: "http://spam.example" });
-    expect(result).toMatchObject({ ok: false, spam: true });
-  });
-
-  it("rejects a submit faster than the minimum time as spam", () => {
-    const result = validateQuote({ ...valid, elapsedMs: MIN_SUBMIT_MS - 1 });
-    expect(result).toMatchObject({ ok: false, spam: true });
-  });
-
-  it("accepts a submit at exactly the minimum time", () => {
-    expect(validateQuote({ ...valid, elapsedMs: MIN_SUBMIT_MS }).ok).toBe(true);
-  });
-
-  it("rejects a missing, negative or non-numeric elapsed time as spam", () => {
-    expect(validateQuote({ ...valid, elapsedMs: undefined })).toMatchObject({ ok: false, spam: true });
-    expect(validateQuote({ ...valid, elapsedMs: -10_000 })).toMatchObject({ ok: false, spam: true });
-    expect(validateQuote({ ...valid, elapsedMs: "60000" })).toMatchObject({ ok: false, spam: true });
-  });
-
-  it("ignores a client start time, so a client clock ahead of the server is not spam", () => {
-    expect(validateQuote({ ...valid, startedAt: 9_999_999_999_999 }).ok).toBe(true);
-  });
-
   it("rejects input that is not an object", () => {
-    expect(validateQuote(null).ok).toBe(false);
-    expect(validateQuote("hello").ok).toBe(false);
-    expect(validateQuote([valid]).ok).toBe(false);
-  });
-});
-
-describe("validateQuoteFields", () => {
-  it("checks fields without the honeypot or timing rules", () => {
-    const result = validateQuoteFields({ ...valid, website: "filled", elapsedMs: 0 });
-    expect(result).toMatchObject({ ok: true, value: { postcode: "B91 3QJ" } });
+    expect(validateQuoteFields(null).ok).toBe(false);
+    expect(validateQuoteFields("hello").ok).toBe(false);
+    expect(validateQuoteFields([valid]).ok).toBe(false);
   });
 
   it("reports field errors", () => {
@@ -176,28 +138,6 @@ describe("validateQuoteFields", () => {
     if (!result.ok) {
       expect(Object.keys(result.errors)).toEqual(["phone"]);
     }
-  });
-});
-
-describe("parseQuoteRequest", () => {
-  it("parses and validates a JSON body", () => {
-    const result = parseQuoteRequest(JSON.stringify(valid));
-    expect(result.ok).toBe(true);
-  });
-
-  it("rejects a body over the size limit", () => {
-    const body = JSON.stringify({ ...valid, description: "x".repeat(MAX_BODY_BYTES) });
-    expect(parseQuoteRequest(body)).toMatchObject({ ok: false, tooLarge: true });
-  });
-
-  it("measures the size limit in bytes, not characters", () => {
-    const body = JSON.stringify({ ...valid, description: "£".repeat(2500) });
-    expect(body.length).toBeLessThan(MAX_BODY_BYTES);
-    expect(parseQuoteRequest(body)).toMatchObject({ ok: false, tooLarge: true });
-  });
-
-  it("rejects malformed JSON", () => {
-    expect(parseQuoteRequest("{not json").ok).toBe(false);
   });
 });
 
@@ -210,10 +150,10 @@ describe("formatQuoteMessage", () => {
     description: "Skim two ceilings.",
   };
 
-  it("lists every detail under the intro", () => {
-    expect(formatQuoteMessage(quote, "Hi Darren, I'd like a quote.")).toBe(
+  it("writes the customer's WhatsApp message and asks for photos", () => {
+    expect(formatQuoteMessage(quote)).toBe(
       [
-        "Hi Darren, I'd like a quote.",
+        "Hi, I'd like a quote please.",
         "",
         "Name: Jane Smith",
         "Phone: 07700 900123",
@@ -222,12 +162,14 @@ describe("formatQuoteMessage", () => {
         "",
         "Job:",
         "Skim two ceilings.",
+        "",
+        "I'll send a few photos of the job in this chat.",
       ].join("\n"),
     );
   });
 
-  it("uses a default intro for automatic delivery", () => {
-    expect(formatQuoteMessage(quote).split("\n")[0]).toBe("New quote request from the website");
+  it("does not name the owner", () => {
+    expect(formatQuoteMessage(quote)).not.toContain("Darren");
   });
 });
 

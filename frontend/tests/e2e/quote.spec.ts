@@ -101,10 +101,7 @@ test("opens WhatsApp with the details prefilled", async ({ page }) => {
   await fillForm(page);
   const request = page.waitForRequest(/^https:\/\/wa\.me\//);
   await page.getByRole("button", { name: "Message Darren on WhatsApp" }).click();
-  const expected = buildWhatsAppUrl(
-    "447456182265",
-    formatQuoteMessage({ ...details, postcode: "B91 3QJ" }, "Hi Darren, I'd like a quote."),
-  );
+  const expected = buildWhatsAppUrl("447456182265", formatQuoteMessage({ ...details, postcode: "B91 3QJ" }));
   const actual = new URL((await request).url());
   expect(actual.origin + actual.pathname).toBe("https://wa.me/447456182265");
   const text = actual.searchParams.get("text") ?? "";
