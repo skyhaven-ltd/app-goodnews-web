@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { builtFile, pageImages } from "./built-files";
 
 const banned =
   /insured|accredit|guarantee|review|award|certified|approved|testimonial|start to finish|from the first call|\d+\s*(jobs|customers|clients|homes)/i;
@@ -36,27 +37,13 @@ test.describe("projects gallery", () => {
     }
   });
 
-  test("ships no image file over 300 KB", async ({ page, request }) => {
+  test("ships no image file over 300 KB", async ({ page }) => {
     await page.goto("/projects");
-    const urls = await page.locator("main figure").evaluateAll((figures) => {
-      const found = new Set<string>();
-      for (const figure of figures) {
-        for (const element of figure.querySelectorAll("img, source")) {
-          const src = element.getAttribute("src");
-          if (src) found.add(src);
-          for (const candidate of (element.getAttribute("srcset") ?? "").split(",")) {
-            const url = candidate.trim().split(/\s+/)[0];
-            if (url) found.add(url);
-          }
-        }
-      }
-      return [...found];
-    });
-    expect(urls.length).toBeGreaterThan(28);
-    for (const url of urls) {
-      const response = await request.get(url);
-      expect(response.ok(), url).toBe(true);
-      expect((await response.body()).length, url).toBeLessThanOrEqual(300_000);
+    const files = (await pageImages(page, "main")).map(builtFile);
+    expect(files.length).toBeGreaterThan(28);
+    for (const file of files) {
+      expect(file.exists, file.path).toBe(true);
+      expect(file.size, file.path).toBeLessThanOrEqual(300_000);
     }
   });
 
