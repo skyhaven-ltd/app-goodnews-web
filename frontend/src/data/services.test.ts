@@ -48,4 +48,11 @@ describe("services", () => {
       expect(copy, service.name).not.toMatch(banned);
     }
   });
+
+  it("speaks as we, without naming Darren or using he, him or his", () => {
+    for (const service of [...leadServices, ...secondaryServices]) {
+      const copy = JSON.stringify({ ...service, photo: undefined, photos: undefined });
+      expect(copy, service.name).not.toMatch(/Darren|\b(he|him|his)\b|—/i);
+    }
+  });
 });
