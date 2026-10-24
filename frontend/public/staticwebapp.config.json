@@ -12,12 +12,6 @@
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       }
-    },
-    {
-      "route": "/api/*",
-      "headers": {
-        "Cache-Control": "no-store"
-      }
     }
   ],
   "responseOverrides": {
@@ -29,9 +23,6 @@
     ".avif": "image/avif",
     ".webp": "image/webp",
     ".woff2": "font/woff2"
-  },
-  "platform": {
-    "apiRuntime": "node:22"
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",

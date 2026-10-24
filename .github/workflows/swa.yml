@@ -6,14 +6,12 @@ on:
       - main
     paths:
       - "frontend/**"
-      - "functions/**"
       - ".github/workflows/swa.yml"
   push:
     branches:
       - main
     paths:
       - "frontend/**"
-      - "functions/**"
       - ".github/workflows/swa.yml"
   workflow_dispatch:
 
@@ -56,18 +54,6 @@ jobs:
       - name: End-to-end test site
         run: npm run test:e2e
         working-directory: frontend
-
-      - name: Install API dependencies
-        run: npm ci
-        working-directory: functions
-
-      - name: Unit test API
-        run: npm test
-        working-directory: functions
-
-      - name: Build API
-        run: npm run build
-        working-directory: functions
 
   deploy:
     name: Deploy to SWA
@@ -112,13 +98,6 @@ jobs:
         env:
           SITE_URL: ${{ steps.swa-host.outputs.site_url }}
 
-      - name: Build API
-        run: |
-          npm ci
-          npm run build
-          npm prune --omit=dev
-        working-directory: functions
-
       - name: Fetch SWA deployment token
         id: swa-token
         run: |
@@ -136,7 +115,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: frontend/dist
-          api_location: functions
           output_location: ""
           skip_app_build: true
           skip_api_build: true
