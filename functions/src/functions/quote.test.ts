@@ -148,6 +148,23 @@ describe("POST /api/quote", () => {
     expect(notifier.sent).toHaveLength(0);
   });
 
+  it.each(["text/plain", "application/x-www-form-urlencoded", "multipart/form-data; boundary=x"])(
+    "returns 415 for a %s body without sending",
+    async (contentType) => {
+      const { notifier, handler, context } = setup({ provider: "fake" });
+      const response = await handler(post(valid, { "content-type": contentType }), context);
+      expect(response.status).toBe(415);
+      expect(notifier.sent).toHaveLength(0);
+    },
+  );
+
+  it("accepts a JSON content type with a charset", async () => {
+    const { notifier, handler, context } = setup({ provider: "fake" });
+    const response = await handler(post(valid, { "content-type": "Application/JSON; charset=utf-8" }), context);
+    expect(response.status).toBe(200);
+    expect(notifier.sent).toHaveLength(1);
+  });
+
   it("returns 400 for malformed JSON without sending", async () => {
     const { notifier, handler, context } = setup({ provider: "fake" });
     const response = await handler(post("{not json"), context);

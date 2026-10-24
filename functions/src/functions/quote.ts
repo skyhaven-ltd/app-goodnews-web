@@ -20,6 +20,11 @@ export function createQuoteHandler(options: QuoteHandlerOptions = {}) {
   const timeoutMs = options.timeoutMs ?? NOTIFY_TIMEOUT_MS;
 
   return async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
+    const contentType = (request.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
+    if (contentType !== "application/json") {
+      return { status: 415, jsonBody: { ok: false, errors: {} } };
+    }
+
     const declared = Number(request.headers.get("content-length") ?? 0);
     if (declared > MAX_BODY_BYTES) {
       return { status: 400, jsonBody: { ok: false, errors: {} } };

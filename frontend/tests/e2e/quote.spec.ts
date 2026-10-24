@@ -46,8 +46,10 @@ test.beforeEach(async ({ page }) => {
 
 test("shows a confirmation when the request is sent", async ({ page }) => {
   let body: Record<string, unknown> | undefined;
+  let contentType: string | undefined;
   await page.route("/api/quote", async (route) => {
     body = route.request().postDataJSON();
+    contentType = route.request().headers()["content-type"];
     await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
   });
   await fillForm(page);
@@ -57,6 +59,7 @@ test("shows a confirmation when the request is sent", async ({ page }) => {
   await expect(success).toContainText("Darren will reply by WhatsApp or phone");
   await expect(page.getByTestId("quote-fallback")).toBeHidden();
   expect(body).toMatchObject({ ...details, postcode: "B91 3QJ", website: "" });
+  expect(contentType).toBe("application/json");
   expect(body).not.toHaveProperty("startedAt");
   expect(typeof body?.elapsedMs).toBe("number");
   expect(body?.elapsedMs as number).toBeGreaterThanOrEqual(0);
