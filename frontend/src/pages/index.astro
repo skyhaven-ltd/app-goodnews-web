@@ -4,9 +4,11 @@ import "../styles/motion.css";
 import Base from "../layouts/Base.astro";
 import ProcessTrack, { type ProcessStep } from "../components/home/ProcessTrack.astro";
 import BeforeAfter from "../components/home/BeforeAfter.astro";
+import ServiceCard from "../components/ServiceCard.astro";
 import { business, telHref } from "../data/business";
 import { quoteLink } from "../data/navigation";
 import { beforeAfterPairs, projectByFile } from "../data/projects";
+import { leadServices, secondaryServices, serviceHref } from "../data/services";
 import { QUOTE_SERVICES, buildWhatsAppUrl } from "../lib/quote";
 
 const hero = projectByFile("plastered-hallway.jpg");
@@ -14,13 +16,9 @@ const whatsappHref = buildWhatsAppUrl(business.whatsapp, `Hi ${business.ownerFir
 const pair = beforeAfterPairs[0];
 
 const services = [
-  { name: "Plastering", href: "/services/plastering", blurb: "Skimming, boarding and ceilings, from single walls to whole floors.", photo: "freshly-plastered-wall.jpg" },
-  { name: "Painting & Decorating", href: "/services/painting-and-decorating", blurb: "Walls, ceilings and woodwork finished and ready to live in.", photo: "finished-landing.jpg" },
-  { name: "Gardening & Landscaping", href: "/services/gardening-and-landscaping", blurb: "Fencing, clearances and raised planters.", photo: "close-board-fence.jpg" },
-  { name: "Kitchen fitting", href: "/services", blurb: "Cabinets, worktops and appliances fitted.", photo: "fitted-kitchen.jpg" },
-  { name: "Carpentry & panelling", href: "/services", blurb: "Joists, framing and decorative wall panelling.", photo: "stair-wall-panelling.jpg" },
-  { name: "Loft conversion", href: "/services", blurb: "Framing, insulation and boarding for loft rooms.", photo: "loft-conversion-stud-framing.jpg" },
-].map((service) => ({ ...service, project: projectByFile(service.photo) }));
+  ...leadServices.map((service) => ({ service, href: serviceHref(service) })),
+  ...secondaryServices.map((service) => ({ service, href: "/services" })),
+];
 
 const steps: ProcessStep[] = [
   { title: "Prepare", text: "Boards down and the room cleared before work starts.", file: "plastering-large-room.jpg" },
@@ -132,29 +130,9 @@ const secondaryClass =
     </div>
     <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
-        services.map((service) => (
+        services.map(({ service, href }) => (
           <li data-motion="rise">
-            <a
-              href={service.href}
-              data-motion="lift"
-              class="flex h-full flex-col overflow-hidden rounded-brand border border-line border-t-6 border-t-baby bg-ground text-navy no-underline"
-            >
-              <span class="block overflow-hidden">
-                <Picture
-                  src={service.project.image}
-                  alt={service.project.alt}
-                  formats={["avif", "webp"]}
-                  widths={[400, 640, 800]}
-                  sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 50vw, 100vw"
-                  loading="lazy"
-                  class="aspect-[3/2] w-full object-cover"
-                />
-              </span>
-              <span class="block p-5">
-                <span class="block font-heading text-xl font-black uppercase">{service.name}</span>
-                <span class="mt-1 block text-body">{service.blurb}</span>
-              </span>
-            </a>
+            <ServiceCard service={service} href={href} />
           </li>
         ))
       }

@@ -1,0 +1,34 @@
+---
+import { Picture } from "astro:assets";
+import type { Service } from "../data/services";
+
+interface Props {
+  service: Service;
+  href?: string;
+}
+
+const { service, href } = Astro.props;
+const Tag = href ? "a" : "div";
+---
+
+<Tag
+  href={href}
+  data-motion={href ? "lift" : undefined}
+  class="flex h-full flex-col overflow-hidden rounded-brand border border-line border-t-6 border-t-baby bg-ground text-navy no-underline"
+>
+  <div class="overflow-hidden">
+    <Picture
+      src={service.photo.image}
+      alt={service.photo.alt}
+      formats={["avif", "webp"]}
+      widths={[400, 640, 800]}
+      sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 50vw, 100vw"
+      loading="lazy"
+      class="aspect-[3/2] w-full object-cover"
+    />
+  </div>
+  <div class="p-5">
+    <h3 class="font-heading text-xl font-black uppercase">{service.name}</h3>
+    <span class="mt-1 block text-body">{service.summary}</span>
+  </div>
+</Tag>
