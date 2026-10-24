@@ -83,7 +83,7 @@ export function validateQuoteFields(input: unknown): QuoteFieldsResult {
   const data = isRecord(input) ? input : {};
   const errors: QuoteErrors = {};
 
-  const name = text(data.name);
+  const name = text(data.name)?.replace(/[\s\p{Cc}]+/gu, " ").trim();
   if (!name) {
     errors.name = "Please enter your name.";
   } else if (name.length > FIELD_LIMITS.name) {

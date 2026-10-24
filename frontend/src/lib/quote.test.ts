@@ -76,6 +76,11 @@ describe("validateQuote", () => {
     });
   });
 
+  it("collapses control characters and newlines in the name to a single space", () => {
+    const result = validateQuote({ ...valid, name: "Jane\r\n\r\nPhone: 0800 000000\u0000\tSmith " });
+    expect(result).toMatchObject({ ok: true, value: { name: "Jane Phone: 0800 000000 Smith" } });
+  });
+
   it("reports every missing field", () => {
     const result = validateQuote({ website: "", elapsedMs: valid.elapsedMs });
     expect(result.ok).toBe(false);
