@@ -33,7 +33,7 @@ async function expectFallbacks(page: Page) {
   await expect(whatsapp).toHaveAttribute("href", /^https:\/\/wa\.me\/447456182265\?text=/);
   expect(decodeURIComponent((await whatsapp.getAttribute("href")) ?? "")).toContain(details.name);
   const sms = fallback.getByRole("link", { name: /Text/ });
-  await expect(sms).toHaveAttribute("href", /^sms:\+447456182265\?body=/);
+  await expect(sms).toHaveAttribute("href", /^sms:\+447456182265\?&body=/);
   expect(decodeURIComponent((await sms.getAttribute("href")) ?? "")).toContain(details.description);
   await expect(fallback.getByRole("link", { name: /07456 182265/ })).toHaveAttribute("href", "tel:+447456182265");
   await expect(page.getByTestId("quote-success")).toBeHidden();

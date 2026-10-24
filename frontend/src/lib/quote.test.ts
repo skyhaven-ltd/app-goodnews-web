@@ -247,7 +247,7 @@ describe("buildWhatsAppUrl", () => {
 
 describe("buildSmsUrl", () => {
   it("builds an sms link with the body encoded", () => {
-    expect(buildSmsUrl("+447456182265", "A&B\nC")).toBe("sms:+447456182265?body=A%26B%0AC");
+    expect(buildSmsUrl("+447456182265", "A&B\nC")).toBe("sms:+447456182265?&body=A%26B%0AC");
   });
 });
 

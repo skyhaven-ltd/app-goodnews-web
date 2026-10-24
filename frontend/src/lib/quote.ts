@@ -185,5 +185,5 @@ export function buildWhatsAppUrl(number: string, message: string): string {
 }
 
 export function buildSmsUrl(phone: string, message: string): string {
-  return `sms:${phone.replace(/[^\d+]/g, "")}?body=${encodeURIComponent(message)}`;
+  return `sms:${phone.replace(/[^\d+]/g, "")}?&body=${encodeURIComponent(message)}`;
 }
