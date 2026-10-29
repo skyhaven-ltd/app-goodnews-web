@@ -49,3 +49,8 @@ variable "cloudflare_account_id" {
   description = "Cloudflare account ID"
   type        = string
 }
+
+variable "resend_dkim_public_key" {
+  description = "Resend DKIM public key for the resend._domainkey TXT record"
+  type        = string
+}

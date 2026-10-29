@@ -41,3 +41,39 @@ resource "cloudflare_dns_record" "www_dnsauth" {
     ignore_changes = [content]
   }
 }
+
+resource "cloudflare_dns_record" "resend_dkim" {
+  zone_id = local.cloudflare_zone_id
+  type    = "TXT"
+  name    = "resend._domainkey.${var.dns_zone_name}"
+  content = var.resend_dkim_public_key
+  proxied = false
+  ttl     = 1
+}
+
+resource "cloudflare_dns_record" "resend_rsend" {
+  zone_id = local.cloudflare_zone_id
+  type    = "CNAME"
+  name    = "rsend.${var.dns_zone_name}"
+  content = "rsend-euw1.forge.rmta.net"
+  proxied = false
+  ttl     = 1
+}
+
+resource "cloudflare_dns_record" "resend_send" {
+  zone_id = local.cloudflare_zone_id
+  type    = "CNAME"
+  name    = "send.${var.dns_zone_name}"
+  content = "send.forge.rmta.net"
+  proxied = false
+  ttl     = 1
+}
+
+resource "cloudflare_dns_record" "dmarc" {
+  zone_id = local.cloudflare_zone_id
+  type    = "TXT"
+  name    = "_dmarc.${var.dns_zone_name}"
+  content = "v=DMARC1; p=none;"
+  proxied = false
+  ttl     = 1
+}

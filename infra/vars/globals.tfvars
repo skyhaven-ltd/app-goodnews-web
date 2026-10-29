@@ -1,1 +1,3 @@
 dns_zone_name = "goodnewsplastering.co.uk"
+
+resend_dkim_public_key = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpMDaz2Xllp52x6AmyA9oolpjpJOdbK4sAVNHUs9JyC/TGZm3Wfy1c34a2+rNlUEDHusqjzu51PBjwn4JCg9z0TlV58W9BWpADRXH9lze//PwDHr8SOzqsWAne2uoOLcSRXCi+3vWyeN9N2JKspEHU7XU4GxP4BuLAQAmcAV8nQQIDAQAB"
