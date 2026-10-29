@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { HttpRequest, InvocationContext } from "@azure/functions";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MAX_BODY_BYTES, MIN_SUBMIT_MS, normalisePostcode, type Quote } from "../lib/quote.js";
 import type { Notifier, NotifierRegistry } from "../lib/notifier.js";
 import { createQuoteHandler } from "./quote.js";
@@ -31,7 +31,7 @@ class FakeNotifier implements Notifier {
   }
 }
 
-function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang"; misconfigured?: boolean } = {}) {
+function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang"; misconfigured?: boolean; defaultTimeout?: boolean } = {}) {
   const notifier = new FakeNotifier(options.behaviour);
   const providers: NotifierRegistry = {
     fake: () => {
@@ -49,7 +49,7 @@ function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang";
   const context = new InvocationContext({
     logHandler: (_level, ...args) => logs.push(args.map(String).join(" ")),
   });
-  const handler = createQuoteHandler({ env: () => env, providers, timeoutMs: 20 });
+  const handler = createQuoteHandler({ env: () => env, providers, timeoutMs: options.defaultTimeout ? undefined : 20 });
   return { notifier, handler, context, logs };
 }
 
@@ -187,6 +187,25 @@ describe("POST /api/quote", () => {
     const { handler, context } = setup({ provider: "fake", behaviour: "hang" });
     const response = await handler(post(valid), context);
     expect(response.status).toBe(502);
+  });
+
+  describe("default notifier timeout", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("waits 8 seconds for the notifier before returning 502", async () => {
+      vi.useFakeTimers();
+      const { handler, context } = setup({ provider: "fake", behaviour: "hang", defaultTimeout: true });
+      let response: Awaited<ReturnType<typeof handler>> | undefined;
+      void handler(post(valid), context).then((result) => {
+        response = result;
+      });
+      await vi.advanceTimersByTimeAsync(7999);
+      expect(response).toBeUndefined();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(response?.status).toBe(502);
+    });
   });
 
   it("never logs submission contents", async () => {
