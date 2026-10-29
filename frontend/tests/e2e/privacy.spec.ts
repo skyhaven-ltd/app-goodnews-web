@@ -21,14 +21,14 @@ test("the privacy page explains the WhatsApp, text and phone routes, storage and
   expect(text).not.toContain("—");
   await expect(main.locator('a[href="tel:+447456182265"]').first()).toBeVisible();
   await expect(main.locator('a[href^="https://wa.me/447456182265"]').first()).toBeVisible();
-  await expect(main.locator('a[href="mailto:dazlan73@gmail.com"]').first()).toBeVisible();
+  await expect(main.locator('a[href="mailto:goodnewsplastering@gmail.com"]').first()).toBeVisible();
   expect(text).not.toMatch(providers);
   expect(await page.content()).not.toMatch(providers);
 });
 
 test("the footer shows the contact email", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("contentinfo").locator('a[href="mailto:dazlan73@gmail.com"]')).toBeVisible();
+  await expect(page.getByRole("contentinfo").locator('a[href="mailto:goodnewsplastering@gmail.com"]')).toBeVisible();
 });
 
 test("the footer privacy link reaches the privacy page", async ({ page }) => {

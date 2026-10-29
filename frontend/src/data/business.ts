@@ -9,7 +9,7 @@ export const business = {
     tel: "+447456182265",
   },
   whatsapp: "447456182265",
-  email: "dazlan73@gmail.com" as string,
+  email: "goodnewsplastering@gmail.com" as string,
 } as const;
 
 export const telHref = `tel:${business.phone.tel}`;

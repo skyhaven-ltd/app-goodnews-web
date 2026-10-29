@@ -13,7 +13,7 @@ describe("buildLocalBusiness", () => {
       name: "Good News Plastering",
       url: "https://example.test/",
       telephone: "+447456182265",
-      email: "dazlan73@gmail.com",
+      email: "goodnewsplastering@gmail.com",
       founder: { "@type": "Person", name: "Darren Goodchild" },
       address: { "@type": "PostalAddress", addressCountry: "GB" },
     });

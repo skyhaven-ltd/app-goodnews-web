@@ -28,7 +28,7 @@ describe("business config", () => {
   });
 
   it("holds the contact email and keeps the placeholder marker", () => {
-    expect(business.email).toBe("dazlan73@gmail.com");
+    expect(business.email).toBe("goodnewsplastering@gmail.com");
     expect(PLACEHOLDER).toBe("[PLACEHOLDER]");
   });
 });
