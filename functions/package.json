@@ -1,0 +1,21 @@
+{
+  "name": "goodnews-api",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/functions/*.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

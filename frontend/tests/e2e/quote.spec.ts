@@ -9,7 +9,7 @@ const details = {
   description: "Skim two ceilings & fill cracks (about 20m²).",
 } as const;
 
-const quote = { ...details, postcode: "B91 3QJ" } as const;
+const quote = { ...details, postcode: "B91 3QJ", preferredContact: "whatsapp" } as const;
 
 async function fillForm(page: Page, description: string = details.description) {
   await page.getByLabel("Your name").fill(details.name);

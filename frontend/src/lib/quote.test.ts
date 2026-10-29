@@ -1,12 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { PLACEHOLDER, business } from "../data/business";
 import {
+  MAX_BODY_BYTES,
+  MIN_SUBMIT_MS,
+  PREFERRED_CONTACTS,
+  PREFERRED_CONTACT_LABELS,
   QUOTE_SERVICES,
   buildSmsUrl,
   buildWhatsAppUrl,
   formatQuoteMessage,
   isUkPhone,
   isUkPostcode,
+  parseQuoteRequest,
+  validateQuote,
   validateQuoteFields,
   type Quote,
 } from "./quote";
@@ -16,6 +22,7 @@ const valid = {
   phone: "07700 900123",
   postcode: "b91 3qj",
   service: "Plastering",
+  preferredContact: "whatsapp",
   description: "Skim two bedroom ceilings after Artex removal.",
 };
 
@@ -66,6 +73,7 @@ describe("validateQuoteFields", () => {
         phone: "07700 900123",
         postcode: "B91 3QJ",
         service: "Plastering",
+        preferredContact: "whatsapp",
         description: "Skim two bedroom ceilings after Artex removal.",
       },
     });
@@ -80,7 +88,7 @@ describe("validateQuoteFields", () => {
     const result = validateQuoteFields({});
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(Object.keys(result.errors).sort()).toEqual(["description", "name", "phone", "postcode", "service"]);
+      expect(Object.keys(result.errors).sort()).toEqual(["description", "name", "phone", "postcode", "preferredContact", "service"]);
     }
   });
 
@@ -106,6 +114,18 @@ describe("validateQuoteFields", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.service).toBeDefined();
+    }
+  });
+
+  it.each(PREFERRED_CONTACTS)("accepts %s as the preferred contact", (preferredContact) => {
+    expect(validateQuoteFields({ ...valid, preferredContact })).toMatchObject({ ok: true, value: { preferredContact } });
+  });
+
+  it("rejects a preferred contact that is not offered", () => {
+    const result = validateQuoteFields({ ...valid, preferredContact: "email" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(Object.keys(result.errors)).toEqual(["preferredContact"]);
     }
   });
 
@@ -142,12 +162,66 @@ describe("validateQuoteFields", () => {
   });
 });
 
+describe("validateQuote", () => {
+  const request = { ...valid, website: "", elapsedMs: MIN_SUBMIT_MS };
+
+  it("accepts a complete request that took long enough to fill in", () => {
+    expect(validateQuote(request)).toMatchObject({ ok: true, value: { postcode: "B91 3QJ" } });
+  });
+
+  it("flags a filled honeypot as spam", () => {
+    expect(validateQuote({ ...request, website: "http://spam.test" })).toEqual({ ok: false, errors: {}, spam: true });
+  });
+
+  it("flags a submit faster than the minimum fill time as spam", () => {
+    expect(validateQuote({ ...request, elapsedMs: MIN_SUBMIT_MS - 1 })).toEqual({ ok: false, errors: {}, spam: true });
+  });
+
+  it("flags a missing fill time as spam", () => {
+    const { elapsedMs: _elapsedMs, ...rest } = request;
+    expect(validateQuote(rest)).toEqual({ ok: false, errors: {}, spam: true });
+  });
+
+  it("reports field errors before spam", () => {
+    const result = validateQuote({ ...request, phone: "", website: "x" });
+    expect(result).toMatchObject({ ok: false, spam: true, errors: { phone: expect.any(String) } });
+  });
+
+  it("rejects input that is not an object", () => {
+    expect(validateQuote([request])).toEqual({ ok: false, errors: {}, spam: false });
+  });
+});
+
+describe("parseQuoteRequest", () => {
+  const request = { ...valid, website: "", elapsedMs: MIN_SUBMIT_MS };
+
+  it("parses and validates a JSON body", () => {
+    expect(parseQuoteRequest(JSON.stringify(request)).ok).toBe(true);
+  });
+
+  it("rejects malformed JSON", () => {
+    expect(parseQuoteRequest("{not json")).toEqual({ ok: false, errors: {}, spam: false });
+  });
+
+  it("rejects a body over the size cap", () => {
+    const body = JSON.stringify({ ...request, padding: "x".repeat(MAX_BODY_BYTES) });
+    expect(parseQuoteRequest(body)).toEqual({ ok: false, errors: {}, spam: false, tooLarge: true });
+  });
+});
+
+describe("PREFERRED_CONTACT_LABELS", () => {
+  it("labels each way we can get back to the customer", () => {
+    expect(PREFERRED_CONTACT_LABELS).toEqual({ whatsapp: "WhatsApp", call: "Call", text: "Text" });
+  });
+});
+
 describe("formatQuoteMessage", () => {
   const quote: Quote = {
     name: "Jane Smith",
     phone: "07700 900123",
     postcode: "B91 3QJ",
     service: "Plastering",
+    preferredContact: "whatsapp",
     description: "Skim two ceilings.",
   };
 

@@ -22,6 +22,7 @@ export function initQuoteForm(form: HTMLFormElement) {
       phone: String(data.get("phone") ?? ""),
       postcode: String(data.get("postcode") ?? ""),
       service: String(data.get("service") ?? ""),
+      preferredContact: "whatsapp",
       description: String(data.get("description") ?? ""),
     };
   }
