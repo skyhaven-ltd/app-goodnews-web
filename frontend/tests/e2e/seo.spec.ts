@@ -66,6 +66,7 @@ test("the quote page has no JSON-LD", async ({ page }) => {
 test("sitemap.xml lists every page by its canonical URL", async ({ page, request }) => {
   const urls = await sitemapUrls(request);
   expect(new Set(urls).size).toBe(urls.length);
+  expect(urls.every((url) => url.startsWith("https://goodnewsplastering.co.uk/"))).toBe(true);
   expect(urls.map((url) => new URL(url).pathname)).toEqual(expect.arrayContaining(["/", "/quote"]));
   for (const url of urls) {
     const response = await page.goto(new URL(url).pathname);
@@ -84,4 +85,5 @@ test("robots.txt allows crawling and points at the sitemap", async ({ request, p
   await page.goto("/");
   const canonical = (await page.locator('link[rel="canonical"]').getAttribute("href")) ?? "";
   expect(text).toContain(`Sitemap: ${new URL("/sitemap.xml", canonical).href}`);
+  expect(text).toContain("Sitemap: https://goodnewsplastering.co.uk/sitemap.xml");
 });

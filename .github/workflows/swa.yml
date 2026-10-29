@@ -80,23 +80,13 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Fetch SWA hostname
-        id: swa-host
-        run: |
-          HOST=$(az staticwebapp show \
-            --name "stapp-goodnews-prd-uks-01" \
-            --resource-group "rg-goodnews-prd-uks-01" \
-            --query "defaultHostname" -o tsv)
-          test -n "$HOST"
-          echo "site_url=https://$HOST" >> "$GITHUB_OUTPUT"
-
       - name: Build site
         run: |
           npm ci
           npm run build
         working-directory: frontend
         env:
-          SITE_URL: ${{ steps.swa-host.outputs.site_url }}
+          SITE_URL: https://goodnewsplastering.co.uk
 
       - name: Fetch SWA deployment token
         id: swa-token
