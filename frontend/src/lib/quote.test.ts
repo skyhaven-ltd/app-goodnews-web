@@ -182,6 +182,10 @@ describe("validateQuote", () => {
     expect(validateQuote(rest)).toEqual({ ok: false, errors: {}, spam: true });
   });
 
+  it.each([-10_000, "60000", Number.NaN])("flags a fill time of %s as spam", (elapsedMs) => {
+    expect(validateQuote({ ...request, elapsedMs })).toEqual({ ok: false, errors: {}, spam: true });
+  });
+
   it("reports field errors before spam", () => {
     const result = validateQuote({ ...request, phone: "", website: "x" });
     expect(result).toMatchObject({ ok: false, spam: true, errors: { phone: expect.any(String) } });
@@ -205,6 +209,12 @@ describe("parseQuoteRequest", () => {
 
   it("rejects a body over the size cap", () => {
     const body = JSON.stringify({ ...request, padding: "x".repeat(MAX_BODY_BYTES) });
+    expect(parseQuoteRequest(body)).toEqual({ ok: false, errors: {}, spam: false, tooLarge: true });
+  });
+
+  it("measures the size cap in bytes, not characters", () => {
+    const body = JSON.stringify({ ...request, description: "£".repeat(2500) });
+    expect(body.length).toBeLessThan(MAX_BODY_BYTES);
     expect(parseQuoteRequest(body)).toEqual({ ok: false, errors: {}, spam: false, tooLarge: true });
   });
 });
