@@ -3,8 +3,7 @@ import Base from "../layouts/Base.astro";
 import { PLACEHOLDER, business, telHref } from "../data/business";
 import { buildWhatsAppUrl } from "../lib/quote";
 
-const whatsappHref = buildWhatsAppUrl(business.whatsapp, `Hi ${business.ownerFirstName}, please delete the messages about my quote.`);
-const provider = PLACEHOLDER;
+const whatsappHref = buildWhatsAppUrl(business.whatsapp, "Hi, please delete the details and messages about my quote.");
 const email: string = business.email;
 const headingClass = "mt-10 text-2xl tracking-tight md:text-3xl";
 const paragraphClass = "mt-4 max-w-prose";
@@ -13,18 +12,18 @@ const linkClass = "inline-flex min-h-tap items-center font-semibold";
 
 <Base
   title={`Privacy Policy | ${business.name}`}
-  description={`How ${business.name} handles the details you send through the quote form, WhatsApp or phone, and how to ask for them to be deleted.`}
+  description={`How ${business.name} handles the details you send through the quote form, WhatsApp, text or phone, and how to ask us to delete them.`}
 >
   <article class="mx-auto max-w-3xl px-4 py-10 md:px-8 md:py-16">
     <h1 class="text-4xl tracking-tight md:text-6xl">Privacy policy</h1>
     <p class="mt-4 max-w-prose text-lg">
-      This page explains what happens to the details you give when you ask {business.owner} of {business.name} for a quote.
+      This page explains what happens to the details you give us when you ask {business.name} for a quote.
     </p>
 
     <h2 class={headingClass}>Who is responsible</h2>
     <p class={paragraphClass}>
-      {business.name} is {business.owner}, a sole trader. He is responsible for the details you send him. You can reach him
-      on <a href={telHref} class={linkClass}>{business.phone.display}</a>, on
+      {business.name} is run by {business.owner}, a sole trader, and he is responsible for the details you send us. You
+      can reach us on <a href={telHref} class={linkClass}>{business.phone.display}</a>, on
       <a href={whatsappHref} class={linkClass}>WhatsApp</a>
       {
         email === PLACEHOLDER ? (
@@ -37,46 +36,49 @@ const linkClass = "inline-flex min-h-tap items-center font-semibold";
       }
     </p>
 
-    <h2 class={headingClass}>What the quote form collects</h2>
+    <h2 class={headingClass}>What the quote form asks for</h2>
     <p class={paragraphClass}>
-      The quote form asks for your name, phone number, postcode, the service you need and a description of the job. It is
-      only used so {business.ownerFirstName} can reply to you about that job. The site has no accounts and does not use
-      cookies or analytics.
+      The quote form asks for your name, phone number, postcode, the service you need, a description of the job and how
+      you'd like us to get back to you. We only use them to reply to you about that job. The site has no accounts and does
+      not use cookies or analytics.
     </p>
 
-    <h2 class={headingClass}>"Send request"</h2>
+    <h2 class={headingClass}>How your request reaches us</h2>
     <p class={paragraphClass}>
-      When you press "Send request", your browser sends the form details to the site's Azure Function, a small program run
-      by Microsoft Azure, which hosts this website. The Function checks the details and passes them through a messaging
-      service ({provider}) to {business.ownerFirstName}'s WhatsApp, where they arrive as a message.
-    </p>
-    <p class={paragraphClass}>
-      The site does not store your details. The Function forwards the message and keeps no copy, and nothing is logged
-      beyond the standard request information Azure records for any website it hosts. The messaging service ({provider})
-      handles the message on its way to {business.ownerFirstName} under its own terms.
+      When you press "Get my quote", your details go to our website, which Microsoft Azure hosts. The website passes them
+      straight to Resend, an email service, and Resend emails them to our Gmail inbox, which Google runs. The website keeps
+      no copy of what you send. Resend keeps a record of the email for a short time to show it was delivered.
     </p>
 
-    <h2 class={headingClass}>"Message Darren on WhatsApp"</h2>
+    <h2 class={headingClass}>Photos, texts and calls</h2>
     <p class={paragraphClass}>
-      The "Message Darren on WhatsApp" button opens your own WhatsApp with the message written out for you. Nothing is sent
-      until you press Send in WhatsApp, and the message goes directly from your own WhatsApp to {business.ownerFirstName},
-      not through this site. WhatsApp's own privacy terms apply to that conversation. The same is true if you text or call
-      him from the links on this site: those go through your own phone.
+      Once your request is sent, you can press "Send photos on WhatsApp" to send us photos of the job. Nothing goes until
+      you press send in WhatsApp. WhatsApp is run by Meta, and its own privacy terms cover that chat.
+    </p>
+    <p class={paragraphClass}>
+      If the form can't send, it gives you buttons to send the same details on WhatsApp or as a text instead. A text goes
+      through your mobile network. If you call us, the call goes through your phone provider like any other call.
     </p>
 
-    <h2 class={headingClass}>Deleting a conversation</h2>
+    <h2 class={headingClass}>What we keep and for how long</h2>
     <p class={paragraphClass}>
-      Your details stay in {business.ownerFirstName}'s WhatsApp or text messages, and on your own phone if you used the
-      WhatsApp button. To ask him to delete the conversation about your quote, call him on
-      <a href={telHref} class={linkClass}>{business.phone.display}</a> or send him a
-      <a href={whatsappHref} class={linkClass}>WhatsApp message</a> asking for it to be deleted. You can delete your own
-      copy in WhatsApp or your messages app at any time.
+      Your quote email stays in our Gmail, and any WhatsApp or text messages stay on our phone. We delete them within 12
+      months of the last time we heard from you. Microsoft Azure keeps the same standard request logs it does for any
+      website.
+    </p>
+
+    <h2 class={headingClass}>Deleting your details</h2>
+    <p class={paragraphClass}>
+      To ask us to delete your quote email and messages sooner, call us on
+      <a href={telHref} class={linkClass}>{business.phone.display}</a>, send us a
+      <a href={whatsappHref} class={linkClass}>WhatsApp message</a> or use the email address above. You can delete your own
+      copy of a WhatsApp or text conversation at any time.
     </p>
 
     <h2 class={headingClass}>Your rights</h2>
     <p class={paragraphClass}>
-      Under UK data protection law you can ask to see, correct or delete the details {business.ownerFirstName} holds about
-      you. If you are unhappy with how they are handled, you can complain to the Information Commissioner's Office.
+      Under UK data protection law you can ask to see, correct or delete the details we hold about you. If you are unhappy
+      with how we handle them, you can complain to the Information Commissioner's Office.
     </p>
   </article>
 </Base>

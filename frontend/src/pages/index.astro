@@ -14,7 +14,7 @@ import { areaHref, areas } from "../data/areas";
 import { buildWhatsAppUrl } from "../lib/quote";
 
 const hero = projectByFile("plastered-hallway.jpg");
-const whatsappHref = buildWhatsAppUrl(business.whatsapp, `Hi ${business.ownerFirstName}, I'd like a quote.`);
+const whatsappHref = buildWhatsAppUrl(business.whatsapp, "Hi, I'd like a quote please.");
 const pair = beforeAfterPairs[0];
 
 const services = [
@@ -54,11 +54,11 @@ const secondaryClass =
         <p class={eyebrowClass}>Birmingham · Worcestershire · Evesham</p>
         <h1 class="mt-3 text-[2.5rem] font-black leading-[0.95] tracking-tight sm:text-5xl lg:text-7xl">
           <span data-motion="skim">Plastering &amp; decorating</span>
-          <span data-motion="skim" class="text-accent">you can trust</span>
+          <span data-motion="skim" class="text-accent">done properly</span>
         </h1>
         <div data-motion="fade">
           <p class="mt-4 max-w-prose text-lg md:mt-6 md:text-xl">
-            {business.owner} has spent over 25 years plastering, decorating and putting homes back together.
+            We've spent over 25 years plastering, decorating and putting homes back together.
           </p>
           <div class="mt-5 grid gap-3 sm:flex sm:flex-wrap md:mt-8">
             <a href={quoteLink.href} data-motion="fill" class={primaryClass}>Get a quote</a>
@@ -66,7 +66,7 @@ const secondaryClass =
               <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 21l1.65-3.8A9 9 0 1 1 7.8 20.3L3 21"></path>
               </svg>
-              WhatsApp {business.ownerFirstName}
+              WhatsApp us
             </a>
           </div>
           <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-semibold">
@@ -125,7 +125,7 @@ const secondaryClass =
   <section id="process" class="bg-navy py-14 text-ground md:py-24">
     <div class="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-4 md:px-8">
       <h2 id="process-title" class:list={[sectionTitleClass, "text-ground"]}>How a job comes together</h2>
-      <p class="text-pale">Real photos from {business.ownerFirstName}'s jobs. Swipe through the stages.</p>
+      <p class="text-pale">Real photos from our own jobs. Swipe through to see each stage.</p>
     </div>
     <ProcessTrack labelledBy="process-title" steps={steps} />
   </section>
@@ -147,7 +147,7 @@ const secondaryClass =
     )
   }
 
-  <section id="stats" aria-label={`Why choose ${business.ownerFirstName}`} class="bg-baby text-navy">
+  <section id="stats" aria-label="Why choose us" class="bg-baby text-navy">
     <ul class="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:px-8 md:py-16">
       {
         stats.map((stat) => (
@@ -162,7 +162,7 @@ const secondaryClass =
 
   <section id="areas" class="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-24">
     <p class={eyebrowClass}>Areas covered</p>
-    <h2 class:list={[sectionTitleClass, "mt-2"]}>Where {business.ownerFirstName} works</h2>
+    <h2 class:list={[sectionTitleClass, "mt-2"]}>Where we work</h2>
     <ul class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       {
         areas.map((area) => (
@@ -174,7 +174,7 @@ const secondaryClass =
         ))
       }
     </ul>
-    <a href="/areas" class="mt-6 inline-flex min-h-tap items-center font-bold">More about the areas covered</a>
+    <a href="/areas" class="mt-6 inline-flex min-h-tap items-center font-bold">More about the areas we cover</a>
   </section>
 
   <Testimonials />
@@ -188,8 +188,8 @@ const secondaryClass =
         <ol class="grid gap-3">
           {
             [
-              `Tell ${business.ownerFirstName} about the job`,
-              "He replies by WhatsApp or phone",
+              "Tell us about the job",
+              "We reply by WhatsApp or phone",
               "Send photos on WhatsApp if it helps",
             ].map((step, index) => (
               <li class="flex items-center gap-3">

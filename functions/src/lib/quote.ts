@@ -10,6 +10,16 @@ export const QUOTE_SERVICES = [
 
 export type QuoteService = (typeof QUOTE_SERVICES)[number];
 
+export const PREFERRED_CONTACTS = ["whatsapp", "call", "text"] as const;
+
+export type PreferredContact = (typeof PREFERRED_CONTACTS)[number];
+
+export const PREFERRED_CONTACT_LABELS: Record<PreferredContact, string> = {
+  whatsapp: "WhatsApp",
+  call: "Call",
+  text: "Text",
+};
+
 export const MIN_SUBMIT_MS = 3000;
 export const MAX_BODY_BYTES = 5 * 1024;
 
@@ -20,13 +30,14 @@ export const FIELD_LIMITS = {
   description: 2000,
 } as const;
 
-export type QuoteField = "name" | "phone" | "postcode" | "service" | "description";
+export type QuoteField = "name" | "phone" | "postcode" | "service" | "preferredContact" | "description";
 
 export interface Quote {
   name: string;
   phone: string;
   postcode: string;
   service: QuoteService;
+  preferredContact: PreferredContact;
   description: string;
 }
 
@@ -62,6 +73,10 @@ function text(value: unknown): string | undefined {
 
 function isService(value: string): value is QuoteService {
   return (QUOTE_SERVICES as readonly string[]).includes(value);
+}
+
+function isPreferredContact(value: string): value is PreferredContact {
+  return (PREFERRED_CONTACTS as readonly string[]).includes(value);
 }
 
 function isSpam(input: Record<string, unknown>): boolean {
@@ -109,6 +124,11 @@ export function validateQuoteFields(input: unknown): QuoteFieldsResult {
     errors.service = "Please choose a service.";
   }
 
+  const preferredContact = text(data.preferredContact);
+  if (!preferredContact || !isPreferredContact(preferredContact)) {
+    errors.preferredContact = "Please choose how we should get back to you.";
+  }
+
   const description = text(data.description);
   if (!description) {
     errors.description = "Please describe the job.";
@@ -127,6 +147,7 @@ export function validateQuoteFields(input: unknown): QuoteFieldsResult {
       phone: phone as string,
       postcode: normalisePostcode(postcode as string),
       service: service as QuoteService,
+      preferredContact: preferredContact as PreferredContact,
       description: description as string,
     },
   };
@@ -164,11 +185,9 @@ export function parseQuoteRequest(body: string): QuoteResult {
   return validateQuote(data);
 }
 
-export const DEFAULT_INTRO = "New quote request from the website";
-
-export function formatQuoteMessage(quote: Quote, intro: string = DEFAULT_INTRO): string {
+export function formatQuoteMessage(quote: Quote): string {
   return [
-    intro,
+    "Hi, I'd like a quote please.",
     "",
     `Name: ${quote.name}`,
     `Phone: ${quote.phone}`,
@@ -177,6 +196,8 @@ export function formatQuoteMessage(quote: Quote, intro: string = DEFAULT_INTRO):
     "",
     "Job:",
     quote.description,
+    "",
+    "I'll send a few photos of the job in this chat.",
   ].join("\n");
 }
 

@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { HttpRequest, InvocationContext } from "@azure/functions";
-import { describe, expect, it } from "vitest";
-import { MAX_BODY_BYTES, MIN_SUBMIT_MS, formatQuoteMessage, normalisePostcode } from "../lib/quote.js";
-import { selectNotifier, type Notifier, type NotifierRegistry } from "../lib/notifier.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { MAX_BODY_BYTES, MIN_SUBMIT_MS, normalisePostcode, type Quote } from "../lib/quote.js";
+import type { Notifier, NotifierRegistry } from "../lib/notifier.js";
 import { createQuoteHandler } from "./quote.js";
 
 const valid = {
@@ -10,16 +10,17 @@ const valid = {
   phone: "07700 900123",
   postcode: "b91 3qj",
   service: "Plastering",
+  preferredContact: "text",
   description: "Skim two bedroom ceilings & hallway, 50% done?",
   website: "",
   elapsedMs: 60_000,
 };
 
 class FakeNotifier implements Notifier {
-  sent: string[] = [];
+  sent: Quote[] = [];
   constructor(private readonly behaviour: "ok" | "fail" | "hang" = "ok") {}
-  send(text: string): Promise<void> {
-    this.sent.push(text);
+  send(quote: Quote): Promise<void> {
+    this.sent.push(quote);
     if (this.behaviour === "fail") {
       return Promise.reject(new Error("provider rejected"));
     }
@@ -30,7 +31,7 @@ class FakeNotifier implements Notifier {
   }
 }
 
-function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang"; misconfigured?: boolean } = {}) {
+function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang"; misconfigured?: boolean; defaultTimeout?: boolean } = {}) {
   const notifier = new FakeNotifier(options.behaviour);
   const providers: NotifierRegistry = {
     fake: () => {
@@ -48,7 +49,7 @@ function setup(options: { provider?: string; behaviour?: "ok" | "fail" | "hang";
   const context = new InvocationContext({
     logHandler: (_level, ...args) => logs.push(args.map(String).join(" ")),
   });
-  const handler = createQuoteHandler({ env: () => env, providers, timeoutMs: 20 });
+  const handler = createQuoteHandler({ env: () => env, providers, timeoutMs: options.defaultTimeout ? undefined : 20 });
   return { notifier, handler, context, logs };
 }
 
@@ -63,19 +64,20 @@ function post(body: unknown, headers: Record<string, string> = {}) {
 }
 
 describe("POST /api/quote", () => {
-  it("sends the formatted message through the configured provider and returns 200", async () => {
+  it("sends the validated quote through the configured provider and returns 200", async () => {
     const { notifier, handler, context } = setup({ provider: "fake" });
     const response = await handler(post(valid), context);
     expect(response.status).toBe(200);
     expect(response.jsonBody).toEqual({ ok: true });
     expect(notifier.sent).toEqual([
-      formatQuoteMessage({
+      {
         name: valid.name,
         phone: valid.phone,
         postcode: normalisePostcode(valid.postcode),
         service: "Plastering",
+        preferredContact: "text",
         description: valid.description,
-      }),
+      },
     ]);
   });
 
@@ -187,6 +189,25 @@ describe("POST /api/quote", () => {
     expect(response.status).toBe(502);
   });
 
+  describe("default notifier timeout", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("waits 8 seconds for the notifier before returning 502", async () => {
+      vi.useFakeTimers();
+      const { handler, context } = setup({ provider: "fake", behaviour: "hang", defaultTimeout: true });
+      let response: Awaited<ReturnType<typeof handler>> | undefined;
+      void handler(post(valid), context).then((result) => {
+        response = result;
+      });
+      await vi.advanceTimersByTimeAsync(7999);
+      expect(response).toBeUndefined();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(response?.status).toBe(502);
+    });
+  });
+
   it("never logs submission contents", async () => {
     const runs = [
       setup({ provider: "fake" }),
@@ -202,14 +223,6 @@ describe("POST /api/quote", () => {
     for (const value of [valid.name, valid.phone, "B91", valid.description, "bad"]) {
       expect(logged).not.toContain(value);
     }
-  });
-});
-
-describe("selectNotifier", () => {
-  it("defaults to no notifier in production, where no providers are registered", () => {
-    expect(selectNotifier({ QUOTE_PROVIDER: "none" })).toBeNull();
-    expect(selectNotifier({ QUOTE_PROVIDER: "callmebot" })).toBeNull();
-    expect(selectNotifier({})).toBeNull();
   });
 });
 

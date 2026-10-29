@@ -81,4 +81,10 @@ describe("areas", () => {
       expect(copy, area.name).not.toMatch(pastWork);
     }
   });
+
+  it("speaks as we, without naming Darren or using he, him or his", () => {
+    for (const area of areas) {
+      expect(JSON.stringify(area), area.name).not.toMatch(/Darren|\b(he|him|his)\b|—/i);
+    }
+  });
 });

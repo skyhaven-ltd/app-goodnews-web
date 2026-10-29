@@ -3,22 +3,33 @@ import {
   buildWhatsAppUrl,
   formatQuoteMessage,
   validateQuoteFields,
+  type PreferredContact,
   type Quote,
   type QuoteErrors,
   type QuoteField,
 } from "../lib/quote";
 
-const FIELD_ORDER: QuoteField[] = ["name", "phone", "postcode", "service", "description"];
+const FIELD_ORDER: QuoteField[] = ["name", "phone", "postcode", "service", "description", "preferredContact"];
 const DEFAULT_TIMEOUT_MS = 10_000;
+
+const REPLY_WORDING: Record<PreferredContact, string> = {
+  whatsapp: "on WhatsApp",
+  call: "with a call",
+  text: "by text",
+};
+
+function photosMessage(quote: Quote): string {
+  return `Hi, I've just asked for a quote for ${quote.service} in ${quote.postcode}. Here are some photos of the job.`;
+}
 
 export function initQuoteForm(form: HTMLFormElement) {
   const whatsappNumber = form.dataset.whatsapp ?? "";
   const smsNumber = form.dataset.sms ?? "";
-  const intro = `Hi ${form.dataset.owner ?? ""}, I'd like a quote.`;
   const sendButton = form.querySelector<HTMLButtonElement>("[data-action=send]")!;
   const sendLabel = sendButton.querySelector<HTMLElement>("[data-label]")!;
-  const whatsappButton = form.querySelector<HTMLButtonElement>("[data-action=whatsapp]")!;
   const success = form.querySelector<HTMLElement>("[data-testid=quote-success]")!;
+  const contactReply = success.querySelector<HTMLElement>("[data-contact-reply]")!;
+  const photosLink = success.querySelector<HTMLAnchorElement>("[data-success=photos]")!;
   const fallback = form.querySelector<HTMLElement>("[data-testid=quote-fallback]")!;
   const fallbackWhatsApp = fallback.querySelector<HTMLAnchorElement>("[data-fallback=whatsapp]")!;
   const fallbackSms = fallback.querySelector<HTMLAnchorElement>("[data-fallback=sms]")!;
@@ -33,20 +44,21 @@ export function initQuoteForm(form: HTMLFormElement) {
       phone: String(data.get("phone") ?? ""),
       postcode: String(data.get("postcode") ?? ""),
       service: String(data.get("service") ?? ""),
+      preferredContact: String(data.get("preferredContact") ?? ""),
       description: String(data.get("description") ?? ""),
     };
   }
 
   function fieldControl(field: QuoteField): HTMLElement | null {
-    if (field === "service") {
-      return form.querySelector<HTMLElement>("[data-field=service]");
+    if (field === "service" || field === "preferredContact") {
+      return form.querySelector<HTMLElement>(`[data-field=${field}]`);
     }
     return form.querySelector<HTMLElement>(`[name=${field}]`);
   }
 
   function focusTarget(field: QuoteField): HTMLElement | null {
-    if (field === "service") {
-      return form.querySelector<HTMLElement>("input[name=service]");
+    if (field === "service" || field === "preferredContact") {
+      return form.querySelector<HTMLElement>(`input[name=${field}]`);
     }
     return fieldControl(field);
   }
@@ -78,20 +90,20 @@ export function initQuoteForm(form: HTMLFormElement) {
     return result.ok ? result.value : undefined;
   }
 
-  function customerMessage(quote: Quote) {
-    return formatQuoteMessage(quote, intro);
-  }
-
   function updateFallbackLinks(quote: Quote) {
-    const message = customerMessage(quote);
+    const message = formatQuoteMessage(quote);
     fallbackWhatsApp.href = buildWhatsAppUrl(whatsappNumber, message);
     fallbackSms.href = buildSmsUrl(smsNumber, message);
+  }
+
+  function updateSuccess(quote: Quote) {
+    contactReply.textContent = REPLY_WORDING[quote.preferredContact];
+    photosLink.href = buildWhatsAppUrl(whatsappNumber, photosMessage(quote));
   }
 
   function setSending(value: boolean) {
     sending = value;
     sendButton.disabled = value;
-    whatsappButton.disabled = value;
     sendLabel.textContent = value ? "Sending…" : idleLabel;
     form.setAttribute("aria-busy", String(value));
   }
@@ -139,19 +151,12 @@ export function initQuoteForm(form: HTMLFormElement) {
     if (sent) {
       form.reset();
       startedAt = performance.now();
+      updateSuccess(quote);
       showPanel(success);
     } else {
       updateFallbackLinks(quote);
       showPanel(fallback);
     }
-  });
-
-  whatsappButton.addEventListener("click", () => {
-    const quote = checkFields();
-    if (!quote) {
-      return;
-    }
-    window.location.assign(buildWhatsAppUrl(whatsappNumber, customerMessage(quote)));
   });
 
   form.addEventListener("input", () => {

@@ -7,13 +7,28 @@ resource "azurerm_static_web_app" "this" {
   tags                = local.tags
 
   app_settings = {
-    QUOTE_PROVIDER = var.quote_provider
+    QUOTE_PROVIDER = "resend"
+    QUOTE_TO       = "goodnewsplastering@gmail.com"
+    QUOTE_FROM     = "Good News Plastering <quotes@goodnewsplastering.co.uk>"
   }
 
   lifecycle {
     ignore_changes = [
+      app_settings["RESEND_API_KEY"],
       repository_branch,
       repository_url,
     ]
   }
+}
+
+resource "azurerm_static_web_app_custom_domain" "apex" {
+  static_web_app_id = azurerm_static_web_app.this.id
+  domain_name       = var.dns_zone_name
+  validation_type   = "dns-txt-token"
+}
+
+resource "azurerm_static_web_app_custom_domain" "www" {
+  static_web_app_id = azurerm_static_web_app.this.id
+  domain_name       = "www.${var.dns_zone_name}"
+  validation_type   = "dns-txt-token"
 }

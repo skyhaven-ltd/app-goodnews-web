@@ -22,6 +22,9 @@ DISABLE_LINTERS:
 CSS_STYLELINT_CONFIG_FILE: .github/validation/.stylelintrc.json
 HTML_HTMLHINT_CONFIG_FILE: .github/validation/.htmlhintrc
 JSON_V8R_FILTER_REGEX_EXCLUDE: staticwebapp\.config\.json
+SPELL_LYCHEE_ARGUMENTS:
+  - --exclude
+  - ^https://(www\.)?goodnewsplastering\.co\.uk
 
 SHOW_ELAPSED_TIME: true
 FLAVOR_SUGGESTIONS: false

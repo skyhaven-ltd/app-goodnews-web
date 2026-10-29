@@ -61,3 +61,11 @@ test("at 360px the service pages do not scroll sideways", async ({ page }) => {
     expect(scrollWidth, path).toBeLessThanOrEqual(clientWidth);
   }
 });
+
+test("the service pages speak as we, without naming Darren", async ({ page }) => {
+  for (const path of ["/services", ...lead.map((service) => service.path)]) {
+    await page.goto(path);
+    const text = await page.locator("main").innerText();
+    expect(text, path).not.toMatch(/Darren|\b(he|him|his)\b/i);
+  }
+});

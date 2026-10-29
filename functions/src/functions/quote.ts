@@ -1,5 +1,5 @@
 import { app, type HttpRequest, type HttpResponseInit, type InvocationContext } from "@azure/functions";
-import { MAX_BODY_BYTES, formatQuoteMessage, parseQuoteRequest } from "../lib/quote.js";
+import { MAX_BODY_BYTES, parseQuoteRequest } from "../lib/quote.js";
 import { providers as defaultProviders, selectNotifier, withTimeout, type Env, type NotifierRegistry } from "../lib/notifier.js";
 
 export const NOTIFY_TIMEOUT_MS = 8000;
@@ -41,7 +41,7 @@ export function createQuoteHandler(options: QuoteHandlerOptions = {}) {
     }
 
     try {
-      await withTimeout(notifier.send(formatQuoteMessage(result.value)), timeoutMs);
+      await withTimeout(notifier.send(result.value), timeoutMs);
     } catch {
       context.warn("Quote notifier failed");
       return { status: 502, jsonBody: { ok: false } };

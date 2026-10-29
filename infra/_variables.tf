@@ -34,8 +34,23 @@ variable "instance" {
   default     = "01"
 }
 
-variable "quote_provider" {
-  description = "Delivery provider used by POST /api/quote; none makes the form fall back to WhatsApp, SMS and phone"
+variable "dns_zone_name" {
+  description = "Domain name for the public DNS zone"
   type        = string
-  default     = "none"
+}
+
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token with Zone and DNS edit permissions"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID"
+  type        = string
+}
+
+variable "resend_dkim_public_key" {
+  description = "Resend DKIM public key for the resend._domainkey TXT record"
+  type        = string
 }

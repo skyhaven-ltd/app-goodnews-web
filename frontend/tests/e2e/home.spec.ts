@@ -124,6 +124,13 @@ test.describe("home page", () => {
   });
 });
 
+test("the home page speaks as we, without naming Darren", async ({ page }) => {
+  await page.goto("/");
+  const text = await page.locator("main").innerText();
+  expect(text).not.toMatch(/Darren|\b(he|him|his)\b/i);
+  await expect(page.locator("#stats")).toHaveAttribute("aria-label", "Why choose us");
+});
+
 test.describe("with motion allowed", () => {
   test.use({ reducedMotion: "no-preference" });
 

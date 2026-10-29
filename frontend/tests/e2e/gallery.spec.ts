@@ -60,16 +60,38 @@ test.describe("projects gallery", () => {
   });
 });
 
+test("the projects page speaks as we, without naming Darren", async ({ page }) => {
+  await page.goto("/projects");
+  const text = await page.locator("main").innerText();
+  expect(text).not.toMatch(/Darren|\b(he|him|his)\b/i);
+  const description = await page.locator('meta[name="description"]').getAttribute("content");
+  expect(description).not.toMatch(/Darren/);
+});
+
 test.describe("about page", () => {
-  test("introduces Darren with known facts, a marked photo placeholder and a quote link", async ({ page }) => {
+  test("introduces Darren with known facts, a job photo and a quote link", async ({ page }) => {
     await page.goto("/about");
     const main = page.locator("main");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet Darren");
     await expect(main).toContainText("Darren Goodchild");
     await expect(main).toContainText("25 years");
-    await expect(main.locator("[data-placeholder=photo]")).toContainText("[PLACEHOLDER]");
+    await expect(main.locator("[data-placeholder]")).toHaveCount(0);
+    await expect(main).not.toContainText("[PLACEHOLDER]");
+    const photo = main.locator("section").first().locator("picture img");
+    await expect(photo).toHaveAttribute("alt", /plastered walls and ceiling with plastering tools/);
+    await expect(photo).toHaveAttribute("src", /\.jpe?g/);
     await expect(main.locator('a[href="/quote"]').first()).toBeVisible();
     await expect(main.locator('a[href="/projects"]').first()).toBeVisible();
+  });
+
+  test("speaks as we after the intro", async ({ page }) => {
+    await page.goto("/about");
+    const sections = await page.locator("main section").all();
+    expect(sections.length).toBeGreaterThan(1);
+    for (const section of sections.slice(1)) {
+      expect(await section.innerText()).not.toMatch(/Darren|\b(he|him|his)\b/i);
+    }
+    expect(await sections[0].innerText()).not.toMatch(/\b(he|him|his)\b/i);
   });
 
   test("makes no unverified claims", async ({ page }) => {

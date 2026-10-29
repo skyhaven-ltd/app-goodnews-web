@@ -94,23 +94,13 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Fetch SWA hostname
-        id: swa-host
-        run: |
-          HOST=$(az staticwebapp show \
-            --name "stapp-goodnews-prd-uks-01" \
-            --resource-group "rg-goodnews-prd-uks-01" \
-            --query "defaultHostname" -o tsv)
-          test -n "$HOST"
-          echo "site_url=https://$HOST" >> "$GITHUB_OUTPUT"
-
       - name: Build site
         run: |
           npm ci
           npm run build
         working-directory: frontend
         env:
-          SITE_URL: ${{ steps.swa-host.outputs.site_url }}
+          SITE_URL: https://goodnewsplastering.co.uk
 
       - name: Build API
         run: |
@@ -118,6 +108,27 @@ jobs:
           npm run build
           npm prune --omit=dev
         working-directory: functions
+
+      - name: Fetch secrets from Key Vault
+        uses: skyhaven-ltd/pipeline-engineering-github-actions/actions/keyvault-secrets@6cfa143b42ff464e4101d69c09945db9fac369e5 # v2.0.0
+        with:
+          keyvault_name: kv-platform-prd-uks-02
+          secrets: |
+            RESEND_API_KEY=app-goodnews-resend-api-key
+          login: "false"
+
+      - name: Set quote API app settings
+        run: |
+          set -euo pipefail
+          if [ -z "${RESEND_API_KEY:-}" ]; then
+            echo "RESEND_API_KEY is empty"
+            exit 1
+          fi
+          az staticwebapp appsettings set \
+            --name "stapp-goodnews-prd-uks-01" \
+            --resource-group "rg-goodnews-prd-uks-01" \
+            --setting-names "RESEND_API_KEY=${RESEND_API_KEY}" \
+            --output none
 
       - name: Fetch SWA deployment token
         id: swa-token
