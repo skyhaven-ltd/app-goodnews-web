@@ -1,11 +1,17 @@
 ---
 import { business, telHref } from "../data/business";
-import { FIELD_LIMITS, QUOTE_SERVICES } from "../lib/quote";
+import { FIELD_LIMITS, PREFERRED_CONTACTS, PREFERRED_CONTACT_LABELS, QUOTE_SERVICES } from "../lib/quote";
 
 const inputClass =
   "mt-2 block min-h-tap w-full rounded-brand border border-line bg-ground px-4 py-2 text-base text-navy aria-invalid:border-error";
 const labelClass = "block font-heading text-sm font-bold uppercase tracking-wide text-navy";
 const errorClass = "mt-2 text-base font-semibold text-error";
+const pillClass =
+  "inline-flex min-h-tap min-w-tap cursor-pointer items-center justify-center rounded-full border border-line bg-ground px-4 text-base font-semibold text-navy has-checked:border-navy has-checked:bg-navy has-checked:text-ground has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent";
+const primaryLinkClass =
+  "inline-flex min-h-tap w-full items-center justify-center rounded-brand bg-navy px-5 py-3 font-heading font-bold uppercase text-ground no-underline";
+const secondaryLinkClass =
+  "inline-flex min-h-tap w-full items-center justify-center rounded-brand border-2 border-navy bg-ground px-5 py-3 font-heading font-bold uppercase text-navy no-underline";
 ---
 
 <form
@@ -72,7 +78,7 @@ const errorClass = "mt-2 text-base font-semibold text-error";
     <div class="mt-3 flex flex-wrap gap-2">
       {
         QUOTE_SERVICES.map((service) => (
-          <label class="inline-flex min-h-tap min-w-tap cursor-pointer items-center justify-center rounded-full border border-line bg-ground px-4 text-base font-semibold text-navy has-checked:border-navy has-checked:bg-navy has-checked:text-ground has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent">
+          <label class={pillClass}>
             <input type="radio" name="service" value={service} class="sr-only" required />
             {service}
           </label>
@@ -92,33 +98,85 @@ const errorClass = "mt-2 text-base font-semibold text-error";
       maxlength={FIELD_LIMITS.description}
       aria-describedby="quote-description-hint quote-description-error"
       class:list={[inputClass, "min-h-32"]}></textarea>
-    <p id="quote-description-hint" class="mt-2 text-base">Rooms, sizes and anything we should know. You can send photos on WhatsApp.</p>
+    <p id="quote-description-hint" class="mt-2 text-base">Rooms, sizes and anything we should know. You can send us photos on WhatsApp after.</p>
     <p id="quote-description-error" class={errorClass} data-error="description" hidden></p>
   </div>
 
+  <fieldset aria-describedby="quote-preferredContact-error" data-field="preferredContact">
+    <legend class={labelClass}>How should we get back to you?</legend>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        PREFERRED_CONTACTS.map((contact) => (
+          <label class={pillClass}>
+            <input
+              type="radio"
+              name="preferredContact"
+              value={contact}
+              class="sr-only"
+              required
+              checked={contact === "whatsapp"}
+            />
+            {PREFERRED_CONTACT_LABELS[contact]}
+          </label>
+        ))
+      }
+    </div>
+    <p id="quote-preferredContact-error" class={errorClass} data-error="preferredContact" hidden></p>
+  </fieldset>
+
+  <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+    <label for="quote-website">Leave this empty</label>
+    <input id="quote-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
   <div class="grid gap-3">
-    <p id="quote-send-hint" class="text-base" data-testid="quote-send-hint">
-      WhatsApp opens with your message ready. Add a few photos of the job, then press send.
-    </p>
     <div class="grid gap-3 sm:flex sm:flex-wrap">
       <button
         type="submit"
-        class="inline-flex min-h-tap items-center justify-center rounded-brand bg-navy px-6 py-3 font-heading font-bold uppercase text-ground"
-        aria-describedby="quote-send-hint"
+        class="inline-flex min-h-tap items-center justify-center rounded-brand bg-navy px-6 py-3 font-heading font-bold uppercase text-ground disabled:opacity-70"
+        data-action="send"
       >
-        Send on WhatsApp
+        <span data-label>Get my quote</span>
       </button>
-      <a
-        href={`sms:${business.phone.tel}`}
-        class="inline-flex min-h-tap items-center justify-center rounded-brand border-2 border-navy bg-ground px-6 py-3 font-heading font-bold uppercase text-navy no-underline"
-        data-action="sms"
-      >
-        Send as a text
-      </a>
     </div>
     <p class="text-base">
       <a href={telHref} class="inline-flex min-h-tap min-w-tap items-center font-semibold">Or call {business.phone.display}</a>
     </p>
+  </div>
+
+  <div aria-live="polite">
+    <div data-testid="quote-success" class="rounded-brand bg-pale p-5" tabindex="-1" hidden>
+      <h2 class="text-xl">Thanks, we've got your request</h2>
+      <p class="mt-2">We'll get back to you <span data-contact-reply>on WhatsApp</span> soon.</p>
+      <p class="mt-2">Got photos of the job? Send them over on WhatsApp and we can price it quicker.</p>
+      <p class="mt-4">
+        <a href={`https://wa.me/${business.whatsapp}`} data-success="photos" class={primaryLinkClass}>
+          Send photos on WhatsApp
+        </a>
+      </p>
+    </div>
+
+    <div data-testid="quote-fallback" class="rounded-brand border border-line bg-pale p-5" tabindex="-1" hidden>
+      <h2 class="text-xl">Sorry, that didn't send</h2>
+      <p class="mt-2">Your details are still filled in. Send them to us on WhatsApp or by text instead, or give us a call.</p>
+      <ul class="mt-4 grid gap-3 sm:flex sm:flex-wrap">
+        <li>
+          <a href={`https://wa.me/${business.whatsapp}`} data-fallback="whatsapp" class={primaryLinkClass}>
+            Send on WhatsApp
+          </a>
+        </li>
+        <li>
+          <a href={`sms:${business.phone.tel}`} data-fallback="sms" class={secondaryLinkClass}>
+            Send as a text
+          </a>
+        </li>
+        <li>
+          <a href={telHref} class={secondaryLinkClass}>
+            Call {business.phone.display}
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </form>
 
