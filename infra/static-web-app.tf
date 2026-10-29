@@ -6,8 +6,15 @@ resource "azurerm_static_web_app" "this" {
   sku_size            = "Free"
   tags                = local.tags
 
+  app_settings = {
+    QUOTE_PROVIDER = "resend"
+    QUOTE_TO       = "goodnewsplastering@gmail.com"
+    QUOTE_FROM     = "Good News Plastering <quotes@goodnewsplastering.co.uk>"
+  }
+
   lifecycle {
     ignore_changes = [
+      app_settings["RESEND_API_KEY"],
       repository_branch,
       repository_url,
     ]

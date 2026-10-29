@@ -138,3 +138,10 @@ for (const width of widths) {
     }
   });
 }
+
+test("the Static Web App config serves the quote API uncached on Node 22", async ({ request }) => {
+  const config = await (await request.get("/staticwebapp.config.json")).json();
+  expect(config.platform).toEqual({ apiRuntime: "node:22" });
+  expect(config.routes).toContainEqual({ route: "/api/*", headers: { "Cache-Control": "no-store" } });
+  expect(config.globalHeaders["Content-Security-Policy"]).toContain("connect-src 'self'");
+});

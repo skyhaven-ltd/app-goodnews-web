@@ -1,4 +1,6 @@
 node_modules/
+functions/local.settings.json
+functions/dist/
 .env
 .env.*
 !.env.example

@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - "frontend/**"
+      - "functions/**"
       - ".github/workflows/swa.yml"
   push:
     branches:
       - main
     paths:
       - "frontend/**"
+      - "functions/**"
       - ".github/workflows/swa.yml"
   workflow_dispatch:
 
@@ -55,6 +57,18 @@ jobs:
         run: npm run test:e2e
         working-directory: frontend
 
+      - name: Install API dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Unit test API
+        run: npm test
+        working-directory: functions
+
+      - name: Build API
+        run: npm run build
+        working-directory: functions
+
   deploy:
     name: Deploy to SWA
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
@@ -88,6 +102,34 @@ jobs:
         env:
           SITE_URL: https://goodnewsplastering.co.uk
 
+      - name: Build API
+        run: |
+          npm ci
+          npm run build
+          npm prune --omit=dev
+        working-directory: functions
+
+      - name: Fetch secrets from Key Vault
+        uses: skyhaven-ltd/pipeline-engineering-github-actions/actions/keyvault-secrets@6cfa143b42ff464e4101d69c09945db9fac369e5 # v2.0.0
+        with:
+          keyvault_name: kv-platform-prd-uks-02
+          secrets: |
+            RESEND_API_KEY=app-goodnews-resend-api-key
+          login: "false"
+
+      - name: Set quote API app settings
+        run: |
+          set -euo pipefail
+          if [ -z "${RESEND_API_KEY:-}" ]; then
+            echo "RESEND_API_KEY is empty"
+            exit 1
+          fi
+          az staticwebapp appsettings set \
+            --name "stapp-goodnews-prd-uks-01" \
+            --resource-group "rg-goodnews-prd-uks-01" \
+            --setting-names "RESEND_API_KEY=${RESEND_API_KEY}" \
+            --output none
+
       - name: Fetch SWA deployment token
         id: swa-token
         run: |
@@ -105,6 +147,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: frontend/dist
+          api_location: functions
           output_location: ""
           skip_app_build: true
           skip_api_build: true
