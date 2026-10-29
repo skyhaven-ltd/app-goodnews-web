@@ -71,6 +71,15 @@ jobs:
           container_name: ${{ github.event.repository.name }}
           login: "false"
 
+      - name: "Fetch Secrets From Key Vault"
+        uses: skyhaven-ltd/pipeline-engineering-github-actions/actions/keyvault-secrets@6cfa143b42ff464e4101d69c09945db9fac369e5
+        with:
+          keyvault_name: kv-platform-${{ inputs.env || 'prd' }}-uks-02
+          secrets: |
+            TF_VAR_cloudflare_api_token=platform-cloudflare-api-token
+            TF_VAR_cloudflare_account_id=platform-cloudflare-account-id
+          login: "false"
+
       - name: "Terraform Init"
         uses: skyhaven-ltd/pipeline-engineering-github-actions/actions/terraform-backend-init@6cfa143b42ff464e4101d69c09945db9fac369e5
         with:

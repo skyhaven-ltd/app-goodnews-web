@@ -13,3 +13,15 @@ resource "azurerm_static_web_app" "this" {
     ]
   }
 }
+
+resource "azurerm_static_web_app_custom_domain" "apex" {
+  static_web_app_id = azurerm_static_web_app.this.id
+  domain_name       = var.dns_zone_name
+  validation_type   = "dns-txt-token"
+}
+
+resource "azurerm_static_web_app_custom_domain" "www" {
+  static_web_app_id = azurerm_static_web_app.this.id
+  domain_name       = "www.${var.dns_zone_name}"
+  validation_type   = "dns-txt-token"
+}

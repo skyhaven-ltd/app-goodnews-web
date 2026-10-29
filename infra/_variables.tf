@@ -33,3 +33,19 @@ variable "instance" {
   type        = string
   default     = "01"
 }
+
+variable "dns_zone_name" {
+  description = "Domain name for the public DNS zone"
+  type        = string
+}
+
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token with Zone and DNS edit permissions"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID"
+  type        = string
+}
