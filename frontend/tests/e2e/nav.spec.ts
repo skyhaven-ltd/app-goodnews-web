@@ -153,3 +153,20 @@ test("marks the current page in the navigation", async ({ page }) => {
   await page.goto("/quote");
   await expect(page.getByRole("contentinfo").locator('a[href="/quote"][aria-current="page"]')).toHaveCount(1);
 });
+
+test("the header, footer and contact bar speak as we, without naming Darren", async ({ page }) => {
+  await page.setViewportSize(small);
+  await page.goto("/");
+  const footer = page.getByRole("contentinfo");
+  for (const part of [page.getByRole("banner"), footer, page.getByRole("navigation", { name: "Contact" })]) {
+    expect(await part.innerText()).not.toMatch(/Darren|\b(he|him|his)\b/i);
+  }
+  const links = [
+    footer.getByRole("link", { name: "WhatsApp us" }),
+    page.getByRole("navigation", { name: "Contact" }).getByRole("link", { name: /WhatsApp/ }),
+  ];
+  for (const link of links) {
+    const href = (await link.getAttribute("href")) ?? "";
+    expect(new URL(href).searchParams.get("text")).toBe("Hi, I'd like a quote please.");
+  }
+});

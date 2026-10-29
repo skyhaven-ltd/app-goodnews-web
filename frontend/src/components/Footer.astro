@@ -4,7 +4,7 @@ import { buildWhatsAppUrl } from "../lib/quote";
 import { homeLink, isCurrent, legalNav, mainNav, quoteLink, serviceNav } from "../data/navigation";
 
 const path = Astro.url.pathname;
-const whatsappHref = buildWhatsAppUrl(business.whatsapp, `Hi ${business.ownerFirstName}, I'd like a quote.`);
+const whatsappHref = buildWhatsAppUrl(business.whatsapp, "Hi, I'd like a quote please.");
 const year = new Date().getFullYear();
 const headingClass = "font-heading text-sm font-bold uppercase tracking-wide text-baby";
 const linkClass = "inline-flex min-h-tap min-w-tap items-center text-ground no-underline hover:underline aria-[current=page]:underline";
@@ -43,7 +43,7 @@ const groups = [
           <a href={telHref} class={linkClass}>{business.phone.display}</a>
         </li>
         <li>
-          <a href={whatsappHref} class={linkClass}>WhatsApp {business.ownerFirstName}</a>
+          <a href={whatsappHref} class={linkClass}>WhatsApp us</a>
         </li>
         {
           business.email !== PLACEHOLDER && (
